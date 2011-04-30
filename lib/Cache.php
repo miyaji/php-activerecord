@@ -29,8 +29,16 @@ class Cache
 	 *																											 'expire'		 => 120
 	 *																											 ));
 	 *
+	 * $cfg_ar->set_cache(array(
+	 *     'adapter' => 'memcache',
+	 *     'servers' => array(
+	 *         array('10.0.0.2'),
+	 *         array('10.0.0.3', 'weight' => 2)
+	 *     )
+	 * ));
+	 *
 	 * In the example above all the keys expire after 120 seconds, and the
-	 * all get a postfix 'my_cool_app'.
+	 * all get a prefix 'my_cool_app'.
 	 *
 	 * (Note: expiring needs to be implemented in your cache store.)
 	 *
@@ -39,24 +47,37 @@ class Cache
 	 */
 	public static function initialize($url, $options=array())
 	{
-		if ($url)
-		{
+		if (is_array($url) && empty($options)) {
+			$defaults = array(
+				'adapter' => 'memcache',
+				'host' => 'localhost',
+			);
+
+			$options = $url;
+			$options += $defaults;
+			$file = ucwords(Inflector::instance()->camelize($options['adapter']));
+			$class = "ActiveRecord\\$file";
+			static::$adapter = new $class($options);
+		} else if ($url) {
 			$url = parse_url($url);
 			$file = ucwords(Inflector::instance()->camelize($url['scheme']));
 			$class = "ActiveRecord\\$file";
 			require_once __DIR__ . "/cache/$file.php";
 			static::$adapter = new $class($url);
-		}
-		else
+		} else {
 			static::$adapter = null;
+		}
 
-		static::$options = array_merge(array('expire' => 30, 'namespace' => ''),$options);
+		static::$options = array_merge(
+			array('expire' => 30, 'namespace' => ''),
+			$options
+		);
 	}
 
 	public static function flush()
 	{
 		if (static::$adapter)
-			static::$adapter->flush();
+			return static::$adapter->flush();
 	}
 
 	public static function get($key, $closure)
