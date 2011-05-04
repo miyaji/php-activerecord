@@ -42,8 +42,9 @@ class Memcache
 					$server['weight']
 				);
 			}
-		} else if (!@$this->memcache->connect($options['host'],$options['port']))
-			throw new CacheException("Could not connect to $options[host]:$options[port]");
+		} else {
+			$this->memcache->addServer($options['host'], $options['port']);
+		}
 	}
 
 	public function flush()

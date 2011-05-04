@@ -3,8 +3,8 @@ namespace ActiveRecord;
 
 /**
  * Cache::get('the-cache-key', function() {
- *	 # this gets executed when cache is stale
- *	 return "your cacheable datas";
+ *     # this gets executed when cache is stale
+ *     return "your cacheable datas";
  * });
  */
 class Cache
@@ -28,10 +28,10 @@ class Cache
 	 *                                                       'expire'    => 120));
 	 *
 	 * $cfg_ar->set_cache(array(
-	 *     'adapter' => 'memcache',
-	 *     'servers' => array(
-	 *         array('10.0.0.2'),
-	 *         array('10.0.0.3', 'weight' => 2)
+	 *    'adapter' => 'memcache',
+	 *    'servers' => array(
+	 *        array('10.0.0.2'),
+	 *        array('10.0.0.3', 'weight' => 2)
 	 *     )
 	 * ));
 	 *
@@ -45,20 +45,21 @@ class Cache
 	 */
 	public static function initialize($url, $options=array())
 	{
-		if (is_array($url) && empty($options)) {
-			$defaults = array(
-				'adapter' => 'memcache',
-				'host' => 'localhost',
-			);
+		if ($url) {
+			if (is_array($url) && empty($options)) {
+				$defaults = array(
+					'adapter' => 'memcache',
+					'host' => 'localhost',
+				);
 
-			$options = $url;
-			$options += $defaults;
-			$file = ucwords(Inflector::instance()->camelize($options['adapter']));
-			$class = "ActiveRecord\\$file";
-			static::$adapter = new $class($options);
-		} else if ($url) {
-			$url = parse_url($url);
-			$file = ucwords(Inflector::instance()->camelize($url['scheme']));
+				$url += $defaults;
+				$options = $url + $options;
+				$file = $url['adapter'];
+			} else {
+				$url = parse_url($url);
+				$file = $url['scheme'];
+			}
+			$file = ucwords(Inflector::instance()->camelize($file));
 			$class = "ActiveRecord\\$file";
 			require_once __DIR__ . "/cache/$file.php";
 			static::$adapter = new $class($url);

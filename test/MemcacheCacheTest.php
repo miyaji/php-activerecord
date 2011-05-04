@@ -57,7 +57,6 @@ class MemcacheCacheTest extends SnakeCase_PHPUnit_Framework_TestCase
 		$this->assert_not_null(Cache::$adapter);
 	}
 
-
 	public function test_get_returns_the_value()
 	{
 		$this->assert_equals("abcd", $this->cache_get());
