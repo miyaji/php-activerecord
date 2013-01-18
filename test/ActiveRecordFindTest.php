@@ -358,8 +358,7 @@ class ActiveRecordFindTest extends DatabaseTest
 
 	public function test_escape_quotes()
 	{
-		$author = Author::find_by_name("Tito's");
-		$this->assert_not_equals("Tito's",Author::table()->last_sql);
+		$this->assert_not_equals("Tito's",$this->conn->escape("Tito's"));
 	}
 
 	public function test_from()
