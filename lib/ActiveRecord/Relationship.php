@@ -674,7 +674,7 @@ class BelongsTo extends AbstractRelationship
 		$options = $this->unset_non_finder_options($this->options);
 		$options['conditions'] = $conditions;
 		$class = $this->class_name;
-		return $class::first($options);
+		return $class::first($options, 'is_relationship');
 	}
 
 	public function load_eagerly($models=array(), $attributes, $includes, Table $table)
