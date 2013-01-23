@@ -54,22 +54,22 @@ class LoggingTest extends SnakeCase_PHPUnit_Framework_TestCase
     public function assert_log_has_sql($sql)
     {
         $log = $this->get_last_log();
-        $query = substr($log, 0, strlen($sql));
+        $query = $log['query'];
         return $this->assert_equals($sql, $query);
     }
 
     public function assert_log_has_values()
     {
         $log = $this->get_last_log();
-        $this->assert_true(FALSE !== preg_match('/ -- \((.*)\)/', $log, $matches));
+        $this->assert_true( FALSE !== preg_match('/\((.*)\)/', $log['data'], $matches));
         return $matches[1];
     }
 
     public function assert_log_has_time()
     {
         $log = $this->get_last_log();
-        $this->assert_true(FALSE !== preg_match('/\d\.\d{3}$/', $log, $matches));
-        return $matches[0];
+        $this->assert_true(!empty( $log['time']) AND is_float($log['time']) );
+        return $log['time'];
     }
 
     public function test_query()
@@ -106,7 +106,7 @@ class LoggingTest extends SnakeCase_PHPUnit_Framework_TestCase
         $this->assert_equals('1', $values);
 
         $time = $this->assert_log_has_time();
-        $this->assert_equals(1, intval($time));
+        $this->assert_equals(1, intval(round($time)));
     }
 
     public function test_query_with_null()
