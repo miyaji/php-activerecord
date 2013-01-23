@@ -7,20 +7,22 @@ define('PHP_ACTIVERECORD_VERSION_ID','1.0');
 if (!defined('PHP_ACTIVERECORD_AUTOLOAD_PREPEND'))
 	define('PHP_ACTIVERECORD_AUTOLOAD_PREPEND',true);
 
-require 'lib/Singleton.php';
-require 'lib/Config.php';
-require 'lib/Utils.php';
-require 'lib/DateTime.php';
-require 'lib/Model.php';
-require 'lib/Table.php';
-require 'lib/ConnectionManager.php';
-require 'lib/Connection.php';
-require 'lib/SQLBuilder.php';
-require 'lib/Reflections.php';
-require 'lib/Inflector.php';
-require 'lib/CallBack.php';
-require 'lib/Exceptions.php';
-require 'lib/Cache.php';
+require __DIR__ . '/ActiveRecord/Singleton.php';
+require __DIR__ . '/ActiveRecord/Config.php';
+require __DIR__ . '/ActiveRecord/Utils.php';
+require __DIR__ . '/ActiveRecord/DateTime.php';
+require __DIR__ . '/ActiveRecord/Model.php';
+require __DIR__ . '/ActiveRecord/Table.php';
+require __DIR__ . '/ActiveRecord/ConnectionManager.php';
+require __DIR__ . '/ActiveRecord/Connection.php';
+require __DIR__ . '/ActiveRecord/SQLBuilder.php';
+require __DIR__ . '/ActiveRecord/Reflections.php';
+require __DIR__ . '/ActiveRecord/Inflector.php';
+require __DIR__ . '/ActiveRecord/CallBack.php';
+require __DIR__ . '/ActiveRecord/Exceptions.php';
+require __DIR__ . '/ActiveRecord/Cache.php';
+require __DIR__ . '/ActiveRecord/Validations.php';
+require __DIR__ . '/ActiveRecord/Relationship.php';
 
 if (!defined('PHP_ACTIVERECORD_AUTOLOAD_DISABLE'))
 	spl_autoload_register('activerecord_autoload',false,PHP_ACTIVERECORD_AUTOLOAD_PREPEND);

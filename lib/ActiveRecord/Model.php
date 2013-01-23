@@ -706,7 +706,7 @@ class Model
 	/**
 	 * Throws an exception if this model is set to readonly.
 	 *
-	 * @throws ActiveRecord\ReadOnlyException
+	 * @throws \ActiveRecord\ReadOnlyException
 	 * @param string $method_name Name of method that was invoked on model for exception message
 	 */
 	private function verify_not_readonly($method_name)
@@ -1051,10 +1051,13 @@ class Model
 	 * @return boolean True if passed validators otherwise false
 	 */
 	private function _validate()
-	{
-		require_once 'Validations.php';
+	{	
+		$config = Config::instance();
 
-		$validator = new Validations($this);
+		$validator_class = $config->get_validator();
+
+		$validator = new $validator_class($this);
+
 		$validation_on = 'validation_on_' . ($this->is_new_record() ? 'create' : 'update');
 
 		foreach (array('before_validation', "before_$validation_on") as $callback)
@@ -1164,7 +1167,7 @@ class Model
 	/**
 	 * Passing $guard_attributes as true will throw an exception if an attribute does not exist.
 	 *
-	 * @throws ActiveRecord\UndefinedPropertyException
+	 * @throws \ActiveRecord\UndefinedPropertyException
 	 * @param array $attributes An array in the form array(name => value, ...)
 	 * @param boolean $guard_attributes Flag of whether or not protected/non-accessible attributes should be guarded
 	 */
@@ -1346,10 +1349,16 @@ class Model
 			$attributes = substr($method,8);
 			$options['conditions'] = SQLBuilder::create_conditions_from_underscored_string(static::connection(),$attributes,$args,static::$alias_attribute);
 
-			if (!($ret = static::find('first',$options)) && $create)
-				return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
+            try {
+                $ret = static::find('first',$options);
+                return $ret;
+            }
+            catch (\ActiveRecord\RecordNotFound $e) {
+                if ($create)
+                    return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
+                else throw $e;
+            }
 
-			return $ret;
 		}
 		elseif (substr($method,0,11) === 'find_all_by')
 		{
@@ -1539,7 +1548,12 @@ class Model
 			throw new RecordNotFound("Couldn't find $class without an ID");
 
 		$args = func_get_args();
-		$options = static::extract_and_validate_options($args);
+
+        $is_relationship = in_array('is_relationship', $args, TRUE) ? TRUE : FALSE;
+        if ($is_relationship)
+            unset($args[array_search('is_relationship', $args, TRUE)]);
+
+        $options = static::extract_and_validate_options($args);
 		$num_args = count($args);
 		$single = true;
 
@@ -1577,7 +1591,16 @@ class Model
 			return static::find_by_pk($args, $options);
 
 		$options['mapped_names'] = static::$alias_attribute;
-		$list = static::table()->find($options);
+
+
+        $list = static::table()->find($options);
+
+		if (empty($list) AND !$is_relationship)
+		{
+			$last_query = static::table()->conn->last_query;
+
+			throw new RecordNotFound("Couldnt find any records for $class. Tried with query: $last_query");	
+		}
 
 		return $single ? (!empty($list) ? $list[0] : null) : $list;
 	}

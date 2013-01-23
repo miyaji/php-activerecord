@@ -107,8 +107,15 @@ class ActiveRecordWriteTest extends DatabaseTest
 		foreach ($books as $model)
 			$model->delete();
 
-		$res = Book::all();
-		$this->assert_equals(0,count($res));
+        try
+        {
+            Book::all();
+            $this->fail('An excepted \ActiveRecord\RecordNotFound exception has not been raised.');
+        }
+        catch (\ActiveRecord\RecordNotFound $e)
+        {
+            return;
+        }
 	}
 
 	public function test_update()

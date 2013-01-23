@@ -37,7 +37,7 @@ abstract class Connection
 	 */
 	private $logging = false;
 	/**
-	 * Contains a Logger object that must impelement a log() method.
+	 * Contains a Logger object that must implement a log() method.
 	 *
 	 * @var object
 	 */
@@ -291,27 +291,59 @@ abstract class Connection
 	 */
 	public function query($sql, &$values=array())
 	{
-		if ($this->logging)
-			$this->logger->log($sql);
+        if ($this->logging)
+            $now = microtime(true);
 
-		$this->last_query = $sql;
+        $this->last_query = $sql;
 
-		try {
-			if (!($sth = $this->connection->prepare($sql)))
-				throw new DatabaseException($this);
-		} catch (PDOException $e) {
-			throw new DatabaseException($this);
-		}
+        try
+        {
+            if (!($sth = $this->connection->prepare($sql)))
+            {
+                $exception = $this;
+            }
+            else
+            {
+                $sth->setFetchMode(PDO::FETCH_ASSOC);
 
-		$sth->setFetchMode(PDO::FETCH_ASSOC);
+                if (!$sth->execute($values))
+                    $exception = $this;
+            }
+        }
+        catch (PDOException $e)
+        {
+            $exception = isset($sth) ? $sth : $this;
+        }
 
-		try {
-			if (!$sth->execute($values))
-				throw new DatabaseException($this);
-		} catch (PDOException $e) {
-			throw new DatabaseException($sth);
-		}
-		return $sth;
+        if (isset($exception))
+            throw new DatabaseException($exception);
+
+        if ($this->logging)
+        {
+            $time = microtime(true) - $now;
+            $sql = preg_replace('/\s+/', ' ', $sql);
+            $data = '';
+
+            if ($values) {
+                $values = array_map(function ($v)
+                {
+                    if (is_null($v))
+                        return 'NULL';
+                    if (is_string($v))
+                        return "'" . addslashes($v) . "'";
+                    return $v;
+                }, $values);
+                $data = ' (' . implode(',', $values) . ')';
+            }
+
+            $this->logger->log(array(
+                'time' => round($time, 5),
+                'query' => $sql,
+                'data' => $data
+            ));
+        }
+
+        return $sth;
 	}
 
 	/**

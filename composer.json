@@ -9,6 +9,12 @@
         "php": ">=5.3.0"
     },
     "autoload": {
-        "files": [ "ActiveRecord.php" ]
+        "psr-0": {
+            "ActiveRecord": "lib/"
+        },
+        "files": [
+            "lib/ActiveRecord/Utils.php",
+            "lib/ActiveRecord/Exceptions.php"
+        ]
     }
 }
