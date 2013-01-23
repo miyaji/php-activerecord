@@ -706,7 +706,7 @@ class Model
 	/**
 	 * Throws an exception if this model is set to readonly.
 	 *
-	 * @throws ActiveRecord\ReadOnlyException
+	 * @throws \ActiveRecord\ReadOnlyException
 	 * @param string $method_name Name of method that was invoked on model for exception message
 	 */
 	private function verify_not_readonly($method_name)

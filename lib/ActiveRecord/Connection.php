@@ -291,33 +291,42 @@ abstract class Connection
 	 */
 	public function query($sql, &$values=array())
 	{
-		if ($this->logging)
+        if ($this->logging)
             $now = microtime(true);
 
-		$this->last_query = $sql;
+        $this->last_query = $sql;
 
-        try {
-            if (!($sth = $this->connection->prepare($sql))) {
+        try
+        {
+            if (!($sth = $this->connection->prepare($sql)))
+            {
                 $exception = $this;
-            } else {
+            }
+            else
+            {
                 $sth->setFetchMode(PDO::FETCH_ASSOC);
 
                 if (!$sth->execute($values))
                     $exception = $this;
             }
-        } catch (PDOException $e) {
+        }
+        catch (PDOException $e)
+        {
             $exception = isset($sth) ? $sth : $this;
         }
 
-        if (isset($exception)) {
+        if (isset($exception))
             throw new DatabaseException($exception);
-        }
 
-        if ($this->logging) {
+        if ($this->logging)
+        {
             $time = microtime(true) - $now;
             $sql = preg_replace('/\s+/', ' ', $sql);
+            $data = '';
+
             if ($values) {
-                $values = array_map(function ($v) {
+                $values = array_map(function ($v)
+                {
                     if (is_null($v))
                         return 'NULL';
                     if (is_string($v))
@@ -325,10 +334,13 @@ abstract class Connection
                     return $v;
                 }, $values);
                 $data = ' (' . implode(',', $values) . ')';
-            } else {
-                $data = '';
             }
-            $this->logger->log(sprintf("%s --%s %.3f", $sql, $data, $time ));
+
+            $this->logger->log(array(
+                'time' => round($time, 5),
+                'query' => $sql,
+                'data' => $data
+            ));
         }
 
         return $sth;
