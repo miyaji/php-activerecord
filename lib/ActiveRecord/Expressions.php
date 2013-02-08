@@ -50,7 +50,7 @@ class Expressions
 	public function bind($parameter_number, $value)
 	{
 		if ($parameter_number <= 0)
-			throw new ExpressionsException("Invalid parameter index: $parameter_number");
+			throw new Exception\ExpressionsException("Invalid parameter index: $parameter_number");
 
 		$this->values[$parameter_number-1] = $value;
 	}
@@ -108,7 +108,7 @@ class Expressions
 				if ($quotes % 2 == 0)
 				{
 					if ($j > $num_values-1)
-						throw new ExpressionsException("No bound parameter for index $j");
+						throw new Exception\ExpressionsException("No bound parameter for index $j");
 
 					$ch = $this->substitute($values,$substitute,$i,$j++);
 				}

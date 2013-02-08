@@ -159,7 +159,7 @@ class CallBack
 	public function invoke($model, $name, $must_exist=true)
 	{
 		if ($must_exist && !array_key_exists($name, $this->registry))
-			throw new ActiveRecordException("No callbacks were defined for: $name on " . get_class($model));
+			throw new Exception\ActiveRecordException("No callbacks were defined for: $name on " . get_class($model));
 
 		// if it doesn't exist it might be a /(after|before)_(create|update)/ so we still need to run the save
 		// callback
@@ -216,7 +216,7 @@ class CallBack
 			$closure_or_method_name = $name;
 
 		if (!in_array($name,self::$VALID_CALLBACKS))
-			throw new ActiveRecordException("Invalid callback: $name");
+			throw new Exception\ActiveRecordException("Invalid callback: $name");
 
 		if (!($closure_or_method_name instanceof Closure))
 		{
@@ -228,13 +228,13 @@ class CallBack
 				if ($this->klass->hasMethod($closure_or_method_name))
 				{
 					// Method is private or protected
-					throw new ActiveRecordException("Callback methods need to be public (or anonymous closures). " .
+					throw new Exception\ActiveRecordException("Callback methods need to be public (or anonymous closures). " .
 						"Please change the visibility of " . $this->klass->getName() . "->" . $closure_or_method_name . "()");
 				}
 				else
 				{
 					// i'm a dirty ruby programmer
-					throw new ActiveRecordException("Unknown method for callback: $name" .
+					throw new Exception\ActiveRecordException("Unknown method for callback: $name" .
 						(is_string($closure_or_method_name) ? ": #$closure_or_method_name" : ""));
 				}
 			}

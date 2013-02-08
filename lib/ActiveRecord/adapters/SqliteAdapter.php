@@ -16,7 +16,7 @@ class SqliteAdapter extends Connection
 	protected function __construct($info)
 	{
 		if (!file_exists($info->host))
-			throw new DatabaseException("Could not find sqlite db: $info->host");
+			throw new Exception\DatabaseException("Could not find sqlite db: $info->host");
 
 		$this->connection = new PDO("sqlite:$info->host",null,null,static::$PDO_OPTIONS);
 	}
@@ -83,7 +83,7 @@ class SqliteAdapter extends Connection
 
 	public function set_encoding($charset)
 	{
-		throw new ActiveRecordException("SqliteAdapter::set_charset not supported.");
+		throw new Exception\ActiveRecordException("SqliteAdapter::set_charset not supported.");
 	}
 
 	public function accepts_limit_and_order_for_update_and_delete() { return true; }

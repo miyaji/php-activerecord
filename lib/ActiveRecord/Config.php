@@ -4,6 +4,7 @@
  */
 namespace ActiveRecord;
 use Closure;
+use Config\ConfigException;
 
 /**
  * Manages configuration options for ActiveRecord.

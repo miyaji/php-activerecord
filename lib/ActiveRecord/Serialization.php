@@ -195,7 +195,7 @@ abstract class Serialization
 						$this->attributes[$association] = $includes;
 					}
 
-				} catch (UndefinedPropertyException $e) {
+				} catch (Exception\UndefinedPropertyException $e) {
 					;//move along
 				}
 			}

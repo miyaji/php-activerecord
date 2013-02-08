@@ -2,21 +2,7 @@
 /**
  * @package ActiveRecord
  */
-namespace ActiveRecord;
-
-/**
- * Generic base exception for all ActiveRecord specific errors.
- *
- * @package ActiveRecord
- */
-class ActiveRecordException extends \Exception {};
-
-/**
- * Thrown when a record cannot be found.
- *
- * @package ActiveRecord
- */
-class RecordNotFound extends ActiveRecordException {};
+namespace ActiveRecord\Exception;
 
 /**
  * Thrown when there was an error performing a database operation.
@@ -141,4 +127,3 @@ class RelationshipException extends ActiveRecordException {};
  * @package ActiveRecord
  */
 class HasManyThroughAssociationException extends RelationshipException {};
-?>

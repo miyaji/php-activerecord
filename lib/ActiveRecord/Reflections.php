@@ -63,7 +63,7 @@ class Reflections extends Singleton
 		if (isset($this->reflections[$class]))
 			return $this->reflections[$class];
 
-		throw new ActiveRecordException("Class not found: $class");
+		throw new Exception\ActiveRecordException("Class not found: $class");
 	}
 
 	/**

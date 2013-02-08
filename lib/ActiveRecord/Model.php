@@ -341,19 +341,19 @@ class Model
 	 */
 	public function __isset($attribute_name)
 	{
-        if (array_key_exists($attribute_name,$this->attributes) || array_key_exists($attribute_name,static::$alias_attribute)) 
-        {
-   	       return true;
-   	    }
+		if (array_key_exists($attribute_name,$this->attributes) || array_key_exists($attribute_name,static::$alias_attribute)) 
+		{
+			return true;
+		}
 
-   	    try 
-   	    {
-   	    	$this->__get($attribute_name);
-   	        return true;
-   	    } 
-   	    	catch (UndefinedPropertyException $e) {
-   	        return false;
-   	    }
+		try 
+		{
+			$this->__get($attribute_name);
+			return true;
+		} 
+		catch (Exception\UndefinedPropertyException $e) {
+			return false;
+		}
 		// return array_key_exists($attribute_name,$this->attributes) || array_key_exists($attribute_name,static::$alias_attribute);
 	}
 
@@ -430,7 +430,7 @@ class Model
 				return $this->$item['to']->$delegated_name = $value;
 		}
 
-		throw new UndefinedPropertyException(get_called_class(),$name);
+		throw new Exception\UndefinedPropertyException(get_called_class(),$name);
 	}
 
 	public function __wakeup()
@@ -531,7 +531,7 @@ class Model
 			}
 		}
 
-		throw new UndefinedPropertyException(get_called_class(),$name);
+		throw new Exception\UndefinedPropertyException(get_called_class(),$name);
 	}
 
 	/**
@@ -712,7 +712,7 @@ class Model
 	private function verify_not_readonly($method_name)
 	{
 		if ($this->is_readonly())
-			throw new ReadOnlyException(get_class($this), $method_name);
+			throw new Exception\ReadOnlyException(get_class($this), $method_name);
 	}
 
 	/**
@@ -868,7 +868,7 @@ class Model
 			$pk = $this->values_for_pk();
 
 			if (empty($pk))
-				throw new ActiveRecordException("Cannot update, no primary key defined for: " . get_called_class());
+				throw new Exception\ActiveRecordException("Cannot update, no primary key defined for: " . get_called_class());
 
 			if (!$this->invoke_callback('before_update',false))
 				return false;
@@ -923,7 +923,7 @@ class Model
 
 		$conditions = is_array($options) ? $options['conditions'] : $options;
 
-		if (is_array($conditions) && !is_hash($conditions))
+		if (is_array($conditions) && !Utils::is_hash($conditions))
 			call_user_func_array(array($sql, 'delete'), $conditions);
 		else
 			$sql->delete($conditions);
@@ -978,7 +978,7 @@ class Model
 
 		if (isset($options['conditions']) && ($conditions = $options['conditions']))
 		{
-			if (is_array($conditions) && !is_hash($conditions))
+			if (is_array($conditions) && !Utils::is_hash($conditions))
 				call_user_func_array(array($sql, 'where'), $conditions);
 			else
 				$sql->where($conditions);
@@ -1008,7 +1008,7 @@ class Model
 		$pk = $this->values_for_pk();
 
 		if (empty($pk))
-			throw new ActiveRecordException("Cannot delete, no primary key defined for: " . get_called_class());
+			throw new Exception\ActiveRecordException("Cannot delete, no primary key defined for: " . get_called_class());
 
 		if (!$this->invoke_callback('before_destroy',false))
 			return false;
@@ -1200,7 +1200,7 @@ class Model
 				// set valid table data
 				try {
 					$this->$name = $value;
-				} catch (UndefinedPropertyException $e) {
+				} catch (Exception\UndefinedPropertyException $e) {
 					$exceptions[] = $e->getMessage();
 				}
 			}
@@ -1216,7 +1216,7 @@ class Model
 		}
 
 		if (!empty($exceptions))
-			throw new UndefinedPropertyException(get_called_class(),$exceptions);
+			throw new Exception\UndefinedPropertyException(get_called_class(),$exceptions);
 	}
 
 	/**
@@ -1245,7 +1245,7 @@ class Model
 				return $this->__relationships[$name] = $model;
 		}
 
-		throw new RelationshipException("Relationship named $name has not been declared for class: {$table->class->getName()}");
+		throw new Exception\RelationshipException("Relationship named $name has not been declared for class: {$table->class->getName()}");
 	}
 
 	/**
@@ -1338,7 +1338,7 @@ class Model
 
 			// can't take any finders with OR in it when doing a find_or_create_by
 			if (strpos($attributes,'_or_') !== false)
-				throw new ActiveRecordException("Cannot use OR'd attributes in find_or_create_by");
+				throw new Exception\ActiveRecordException("Cannot use OR'd attributes in find_or_create_by");
 
 			$create = true;
 			$method = 'find_by' . substr($method,17);
@@ -1349,15 +1349,15 @@ class Model
 			$attributes = substr($method,8);
 			$options['conditions'] = SQLBuilder::create_conditions_from_underscored_string(static::connection(),$attributes,$args,static::$alias_attribute);
 
-            try {
-                $ret = static::find('first',$options);
-                return $ret;
-            }
-            catch (\ActiveRecord\RecordNotFound $e) {
-                if ($create)
-                    return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
-                else throw $e;
-            }
+			try {
+				$ret = static::find('first',$options);
+				return $ret;
+			}
+			catch (\ActiveRecord\RecordNotFound $e) {
+				if ($create)
+					return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
+				else throw $e;
+			}
 
 		}
 		elseif (substr($method,0,11) === 'find_all_by')
@@ -1371,7 +1371,7 @@ class Model
 			return static::count($options);
 		}
 
-		throw new ActiveRecordException("Call to undefined method: $method");
+		throw new Exception\ActiveRecordException("Call to undefined method: $method");
 	}
 
 	/**
@@ -1394,7 +1394,7 @@ class Model
 			$table = static::table();
 
 			if (($association = $table->get_relationship($association_name)) ||
-				  ($association = $table->get_relationship(($association_name = Utils::pluralize($association_name)))))
+				($association = $table->get_relationship(($association_name = Utils::pluralize($association_name)))))
 			{
 				// access association to ensure that the relationship has been loaded
 				// so that we do not double-up on records if we append a newly created
@@ -1403,7 +1403,7 @@ class Model
 			}
 		}
 
-		throw new ActiveRecordException("Call to undefined method: $method");
+		throw new Exception\ActiveRecordException("Call to undefined method: $method");
 	}
 
 	/**
@@ -1435,7 +1435,7 @@ class Model
 
 		if (!empty($args) && !is_null($args[0]) && !empty($args[0]))
 		{
-			if (is_hash($args[0]))
+			if (Utils::is_hash($args[0]))
 				$options['conditions'] = $args[0];
 			else
 				$options['conditions'] = call_user_func_array('static::pk_conditions',$args);
@@ -1549,11 +1549,11 @@ class Model
 
 		$args = func_get_args();
 
-        $is_relationship = in_array('is_relationship', $args, TRUE) ? TRUE : FALSE;
-        if ($is_relationship)
-            unset($args[array_search('is_relationship', $args, TRUE)]);
+		$is_relationship = in_array('is_relationship', $args, TRUE) ? TRUE : FALSE;
+		if ($is_relationship)
+			unset($args[array_search('is_relationship', $args, TRUE)]);
 
-        $options = static::extract_and_validate_options($args);
+		$options = static::extract_and_validate_options($args);
 		$num_args = count($args);
 		$single = true;
 
@@ -1561,22 +1561,22 @@ class Model
 		{
 			switch ($args[0])
 			{
-				case 'all':
-					$single = false;
-					break;
+			case 'all':
+				$single = false;
+				break;
 
-			 	case 'last':
-					if (!array_key_exists('order',$options))
-						$options['order'] = join(' DESC, ',static::table()->pk) . ' DESC';
-					else
-						$options['order'] = SQLBuilder::reverse_order($options['order']);
+			case 'last':
+				if (!array_key_exists('order',$options))
+					$options['order'] = join(' DESC, ',static::table()->pk) . ' DESC';
+				else
+					$options['order'] = SQLBuilder::reverse_order($options['order']);
 
-					// fall thru
+				// fall thru
 
-			 	case 'first':
-			 		$options['limit'] = 1;
-			 		$options['offset'] = 0;
-			 		break;
+			case 'first':
+				$options['limit'] = 1;
+				$options['offset'] = 0;
+				break;
 			}
 
 			$args = array_slice($args,1);
@@ -1593,13 +1593,13 @@ class Model
 		$options['mapped_names'] = static::$alias_attribute;
 
 
-        $list = static::table()->find($options);
+		$list = static::table()->find($options);
 
 		if (empty($list) AND !$is_relationship)
 		{
 			$last_query = static::table()->conn->last_query;
 
-			throw new RecordNotFound("Couldnt find any records for $class. Tried with query: $last_query");	
+			throw new Exception\RecordNotFound("Couldnt find any records for $class. Tried with query: $last_query");	
 		}
 
 		return $single ? (!empty($list) ? $list[0] : null) : $list;
@@ -1677,13 +1677,13 @@ class Model
 	 */
 	public static function is_options_hash($array, $throw=true)
 	{
-		if (is_hash($array))
+		if (Utils::is_hash($array))
 		{
 			$keys = array_keys($array);
 			$diff = array_diff($keys,self::$VALID_OPTIONS);
 
 			if (!empty($diff) && $throw)
-				throw new ActiveRecordException("Unknown key(s): " . join(', ',$diff));
+				throw new Exception\ActiveRecordException("Unknown key(s): " . join(', ',$diff));
 
 			$intersect = array_intersect($keys,self::$VALID_OPTIONS);
 
@@ -1730,9 +1730,9 @@ class Model
 					$options = $last;
 				}
 			}
-			catch (ActiveRecordException $e)
+			catch (Exception\ActiveRecordException $e)
 			{
-				if (!is_hash($last))
+				if (!Utils::is_hash($last))
 					throw $e;
 
 				$options = array('conditions' => $last);
@@ -1765,30 +1765,30 @@ class Model
 		return $this->serialize('Xml', $options);
 	}
 
-   /**
-   * Returns an CSV representation of this model.
-   * Can take optional delimiter and enclosure
-   * (defaults are , and double quotes)
-   *
-   * Ex:
-   * <code>
-   * ActiveRecord\CsvSerializer::$delimiter=';';
-   * ActiveRecord\CsvSerializer::$enclosure='';
-   * YourModel::find('first')->to_csv(array('only'=>array('name','level')));
-   * returns: Joe,2
-   *
-   * YourModel::find('first')->to_csv(array('only_header'=>true,'only'=>array('name','level')));
-   * returns: name,level
-   * </code>
-   *
-   * @see Serialization
-   * @param array $options An array containing options for csv serialization (see {@link Serialization} for valid options)
-   * @return string CSV representation of the model
-   */
-  public function to_csv(array $options=array())
-  {
-    return $this->serialize('Csv', $options);
-  }
+	/**
+	 * Returns an CSV representation of this model.
+	 * Can take optional delimiter and enclosure
+	 * (defaults are , and double quotes)
+	 *
+	 * Ex:
+	 * <code>
+	 * ActiveRecord\CsvSerializer::$delimiter=';';
+	 * ActiveRecord\CsvSerializer::$enclosure='';
+	 * YourModel::find('first')->to_csv(array('only'=>array('name','level')));
+	 * returns: Joe,2
+	 *
+	 * YourModel::find('first')->to_csv(array('only_header'=>true,'only'=>array('name','level')));
+	 * returns: name,level
+	 * </code>
+	 *
+	 * @see Serialization
+	 * @param array $options An array containing options for csv serialization (see {@link Serialization} for valid options)
+	 * @return string CSV representation of the model
+	 */
+	public function to_csv(array $options=array())
+	{
+		return $this->serialize('Csv', $options);
+	}
 
 	/**
 	 * Returns an Array representation of this model.
@@ -1893,5 +1893,5 @@ class Model
 		}
 		return true;
 	}
-};
-?>
+
+}

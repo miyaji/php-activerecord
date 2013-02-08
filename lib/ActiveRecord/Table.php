@@ -137,7 +137,7 @@ class Table
 					$ret .= $rel->construct_inner_join_sql($this, false, $alias);
 				}
 				else
-					throw new RelationshipException("Relationship named $value has not been declared for class: {$this->class->getName()}");
+					throw new Exception\RelationshipException("Relationship named $value has not been declared for class: {$this->class->getName()}");
 			}
 			else
 				$ret .= $value;
@@ -166,7 +166,7 @@ class Table
 
 		if (array_key_exists('conditions',$options))
 		{
-			if (!is_hash($options['conditions']))
+			if (!Utils::is_hash($options['conditions']))
 			{
 				if (is_string($options['conditions']))
 					$options['conditions'] = array($options['conditions']);
@@ -300,7 +300,7 @@ class Table
 			return $this->relationships[$name];
 
 		if ($strict)
-			throw new RelationshipException("Relationship named $name has not been declared for class: {$this->class->getName()}");
+			throw new Exception\RelationshipException("Relationship named $name has not been declared for class: {$this->class->getName()}");
 
 		return null;
 	}
@@ -464,7 +464,7 @@ class Table
 			if (!$definitions)# || !is_array($definitions))
 				continue;
 
-			foreach (wrap_strings_in_arrays($definitions) as $definition)
+			foreach (Utils::wrap_strings_in_arrays($definitions) as $definition)
 			{
 				$relationship = null;
 				$definition += compact('namespace');
@@ -552,4 +552,3 @@ class Table
 			http://www.phpactiverecord.org/projects/main/wiki/Utilities#attribute-setters and http://www.phpactiverecord.org/projects/main/wiki/Utilities#attribute-getters on how to make use of this option.', E_USER_DEPRECATED);
 	}
 };
-?>

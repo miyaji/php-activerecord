@@ -24,7 +24,7 @@ class OciAdapter extends Connection
 			$this->dsn_params = isset($info->charset) ? ";charset=$info->charset" : "";
 			$this->connection = new PDO("oci:dbname=//$info->host/$info->db$this->dsn_params",$info->user,$info->pass,static::$PDO_OPTIONS);
 		} catch (PDOException $e) {
-			throw new DatabaseException($e);
+			throw new Exception\DatabaseException($e);
 		}
 	}
 

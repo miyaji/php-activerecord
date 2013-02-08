@@ -92,7 +92,7 @@ abstract class Connection
 			$connection_string = $connection_string_or_connection_name;
 
 		if (!$connection_string)
-			throw new DatabaseException("Empty connection string");
+			throw new Exception\DatabaseException("Empty connection string");
 
 		$info = static::parse_connection_url($connection_string);
 		$fqclass = static::load_adapter_class($info->protocol);
@@ -106,7 +106,7 @@ abstract class Connection
 			if (isset($info->charset))
 				$connection->set_encoding($info->charset);
 		} catch (PDOException $e) {
-			throw new DatabaseException($e);
+			throw new Exception\DatabaseException($e);
 		}
 		return $connection;
 	}
@@ -124,7 +124,7 @@ abstract class Connection
 		$source = __DIR__ . "/adapters/$class.php";
 
 		if (!file_exists($source))
-			throw new DatabaseException("$fqclass not found!");
+			throw new Exception\DatabaseException("$fqclass not found!");
 
 		require_once($source);
 		return $fqclass;
@@ -157,7 +157,7 @@ abstract class Connection
 		$url = @parse_url($connection_url);
 
 		if (!isset($url['host']))
-			throw new DatabaseException('Database host must be specified in the connection string. If you want to specify an absolute filename, use e.g. sqlite://unix(/path/to/file)');
+			throw new Exception\DatabaseException('Database host must be specified in the connection string. If you want to specify an absolute filename, use e.g. sqlite://unix(/path/to/file)');
 
 		$info = new \stdClass();
 		$info->protocol = $url['scheme'];
@@ -238,7 +238,7 @@ abstract class Connection
 
 			$this->connection = new PDO("$info->protocol:$host;dbname=$info->db", $info->user, $info->pass, static::$PDO_OPTIONS);
 		} catch (PDOException $e) {
-			throw new DatabaseException($e);
+			throw new Exception\DatabaseException($e);
 		}
 	}
 
@@ -316,7 +316,7 @@ abstract class Connection
         }
 
         if (isset($exception))
-            throw new DatabaseException($exception);
+            throw new Exception\DatabaseException($exception);
 
         if ($this->logging)
         {
@@ -396,7 +396,7 @@ abstract class Connection
 	public function transaction()
 	{
 		if (!$this->connection->beginTransaction())
-			throw new DatabaseException($this);
+			throw new Exception\DatabaseException($this);
 	}
 
 	/**
@@ -405,7 +405,7 @@ abstract class Connection
 	public function commit()
 	{
 		if (!$this->connection->commit())
-			throw new DatabaseException($this);
+			throw new Exception\DatabaseException($this);
 	}
 
 	/**
@@ -414,7 +414,7 @@ abstract class Connection
 	public function rollback()
 	{
 		if (!$this->connection->rollback())
-			throw new DatabaseException($this);
+			throw new Exception\DatabaseException($this);
 	}
 
 	/**

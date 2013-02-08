@@ -77,7 +77,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		$this->attribute_name = $options[0];
 		$this->options = $this->merge_association_options($options);
 
-		$relationship = strtolower(denamespace(get_called_class()));
+		$relationship = strtolower(Utils::denamespace(get_called_class()));
 
 		if ($relationship === 'hasmany' || $relationship === 'hasandbelongstomany')
 			$this->poly_relationship = true;
@@ -156,7 +156,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 			$this->set_keys($this->get_table()->class->getName(), true);
 
 			if (!isset($options['class_name'])) {
-				$class = classify($options['through'], true);
+				$class = Utils::classify($options['through'], true);
 				if (isset($this->options['namespace']) && !class_exists($class))
 					$class = $this->options['namespace'].'\\'.$class;
 
@@ -281,7 +281,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 	protected function set_inferred_class_name()
 	{
 		$singularize = ($this instanceOf HasMany ? true : false);
-		$this->set_class_name(classify($this->attribute_name, $singularize));
+		$this->set_class_name(Utils::classify($this->attribute_name, $singularize));
 	}
 
 	protected function set_class_name($class_name)
@@ -309,7 +309,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		$condition_values = array_values($model->get_values_for($value_keys));
 
 		// return null if all the foreign key values are null so that we don't try to do a query like "id is null"
-		if (all(null,$condition_values))
+		if (Utils::all(null,$condition_values))
 			return null;
 
 		$conditions = SQLBuilder::create_conditions_from_underscored_string(Table::load(get_class($model))->conn,$condition_string,$condition_values);
