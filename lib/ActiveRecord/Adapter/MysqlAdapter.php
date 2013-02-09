@@ -2,7 +2,11 @@
 /**
  * @package ActiveRecord
  */
-namespace ActiveRecord;
+namespace ActiveRecord\Adapter;
+
+use ActiveRecord\Inflector;
+use ActiveRecord\Column;
+use ActiveRecord\Connection;
 
 /**
  * Adapter for MySQL.
@@ -96,4 +100,3 @@ class MysqlAdapter extends Connection
 	}
 
 }
-?>

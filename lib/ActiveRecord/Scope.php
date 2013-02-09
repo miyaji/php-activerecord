@@ -111,9 +111,7 @@ class Scopes
 				return $this;
 		}
 		else
-		{
-			throw new ActiveRecordException("Call to undefined method: $method");
-		}
+			throw new Exception\UndefinedMethodException("Call to undefined method: $method");
 	}
 
 	protected function call_model_method($method, $args = array())

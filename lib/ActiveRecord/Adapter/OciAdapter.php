@@ -2,9 +2,13 @@
 /**
  * @package ActiveRecord
  */
-namespace ActiveRecord;
+namespace ActiveRecord\Adapter;
 
 use PDO;
+use ActiveRecord\Inflector;
+use ActiveRecord\Column;
+use ActiveRecord\Connection;
+use ActiveRecord\Exception;
 
 /**
  * Adapter for OCI (not completed yet).
@@ -143,4 +147,3 @@ class OciAdapter extends Connection
 		);
 	}
 }
-?>

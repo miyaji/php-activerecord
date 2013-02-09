@@ -352,7 +352,7 @@ class Validations
 					$option_value = (float)$options[$option];
 
 					if (!is_numeric($option_value))
-						throw new ValidationsArgumentError("$option must be a number");
+						throw new Exception\ValidationsArgumentError("$option must be a number");
 
 					$message = str_replace('%d', $option_value, $message);
 
@@ -423,7 +423,7 @@ class Validations
 			$var = $this->model->$attribute;
 
 			if (is_null($options['with']) || !is_string($options['with']) || !is_string($options['with']))
-				throw new ValidationsArgumentError('A regular expression must be supplied as the [with] option of the configuration array.');
+				throw new Exception\ValidationsArgumentError('A regular expression must be supplied as the [with] option of the configuration array.');
 			else
 				$expression = $options['with'];
 
@@ -476,13 +476,13 @@ class Validations
 			switch (sizeof($range_options))
 			{
 				case 0:
-					throw new  ValidationsArgumentError('Range unspecified.  Specify the [within], [maximum], or [is] option.');
+					throw new  Exception\ValidationsArgumentError('Range unspecified.  Specify the [within], [maximum], or [is] option.');
 
 				case 1:
 					break;
 
 				default:
-					throw new  ValidationsArgumentError('Too many range options specified.  Choose only one.');
+					throw new  Exception\ValidationsArgumentError('Too many range options specified.  Choose only one.');
 			}
 
 			$attribute = $options[0];
@@ -494,7 +494,7 @@ class Validations
 				$range = $options[$range_options[0]];
 
 				if (!(Utils::is_a('range', $range)))
-					throw new  ValidationsArgumentError("$range_option must be an array composing a range of numbers with key [0] being less than key [1]");
+					throw new  Exception\ValidationsArgumentError("$range_option must be an array composing a range of numbers with key [0] being less than key [1]");
 				$range_options = array('minimum', 'maximum');
 				$attr['minimum'] = $range[0];
 				$attr['maximum'] = $range[1];
@@ -504,10 +504,10 @@ class Validations
 				$option = $attr[$range_option];
 
 				if ((int)$option <= 0)
-					throw new  ValidationsArgumentError("$range_option value cannot use a signed integer.");
+					throw new  Exception\ValidationsArgumentError("$range_option value cannot use a signed integer.");
 
 				if (is_float($option))
-					throw new  ValidationsArgumentError("$range_option value cannot use a float for length.");
+					throw new  Exception\ValidationsArgumentError("$range_option value cannot use a float for length.");
 
 				if (!($range_option == 'maximum' && is_null($this->model->$attribute)))
 				{

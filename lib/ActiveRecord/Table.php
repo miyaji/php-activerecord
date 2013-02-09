@@ -374,7 +374,7 @@ class Table
 	{
 		// as more adapters are added probably want to do this a better way
 		// than using instanceof but gud enuff for now
-		$quote_name = !($this->conn instanceof PgsqlAdapter);
+		$quote_name = !($this->conn instanceof Adapter\PgsqlAdapter);
 
 		$table_name = $this->get_fully_qualified_table_name($quote_name);
 		$conn = $this->conn;
@@ -467,7 +467,6 @@ class Table
 
 	private function set_associations()
 	{
-		require_once 'Relationship.php';
 		$namespace = $this->class->getNamespaceName();
 
 		foreach ($this->class->getStaticProperties() as $name => $definitions)
@@ -483,19 +482,19 @@ class Table
 				switch ($name)
 				{
 					case 'has_many':
-						$relationship = new HasMany($definition);
+						$relationship = new Relationship\HasMany($definition);
 						break;
 
 					case 'has_one':
-						$relationship = new HasOne($definition);
+						$relationship = new Relationship\HasOne($definition);
 						break;
 
 					case 'belongs_to':
-						$relationship = new BelongsTo($definition);
+						$relationship = new Relationship\BelongsTo($definition);
 						break;
 
 					case 'has_and_belongs_to_many':
-						$relationship = new HasAndBelongsToMany($definition);
+						$relationship = new Relationship\HasAndBelongsToMany($definition);
 						break;
 				}
 

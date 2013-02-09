@@ -304,8 +304,8 @@ class Config extends Singleton
 	 */
 	public function get_date_format()
 	{
-		trigger_error('Use ActiveRecord\Serialization::$DATETIME_FORMAT. Config::get_date_format() has been deprecated.', E_USER_DEPRECATED);
-		return Serialization::$DATETIME_FORMAT;
+		trigger_error('Use ActiveRecord\Serialization\Serialization::$DATETIME_FORMAT. Config::get_date_format() has been deprecated.', E_USER_DEPRECATED);
+		return Serialization\Serialization::$DATETIME_FORMAT;
 	}
 
 	/**
@@ -313,8 +313,8 @@ class Config extends Singleton
 	 */
 	public function set_date_format($format)
 	{
-		trigger_error('Use ActiveRecord\Serialization::$DATETIME_FORMAT. Config::set_date_format() has been deprecated.', E_USER_DEPRECATED);
-		Serialization::$DATETIME_FORMAT = $format;
+		trigger_error('Use ActiveRecord\Serialization\Serialization::$DATETIME_FORMAT. Config::set_date_format() has been deprecated.', E_USER_DEPRECATED);
+		Serialization\Serialization::$DATETIME_FORMAT = $format;
 	}
 
 	/**
