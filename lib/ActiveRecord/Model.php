@@ -445,6 +445,27 @@ class Model
 				return $this->$item['to']->$delegated_name = $value;
 		}
 
+		$table = static::table();
+		if ($relationship = $table->get_relationship($name)
+		) {
+			if (is_null($value)) {
+				$this->__relationships[$name] = $value;
+				return $this->assign_attribute($relationship->foreign_key[0], $value);
+			} elseif (
+				is_object($value) &&
+				$value instanceof $relationship->class_name
+			) {
+				$this->__relationships[$name] = $value;
+				$pk = $value->get_primary_key(0);
+				return $this->assign_attribute(
+					$relationship->foreign_key[0],
+					$value->is_new_record() ? null : $value->{$pk[0]}
+				);
+			} else {
+				throw new Exception\RelationshipException();
+			}
+		}
+
 		throw new Exception\UndefinedPropertyException(get_called_class(),$name);
 	}
 
@@ -1567,6 +1588,135 @@ class Model
 		$values = $sql->get_where_values();
 		return static::connection()->query_and_fetch_one($sql->to_s(),$values);
 	}
+
+	/**
+	 * Get a average amount for specified column.
+	 *
+	 * <code>
+	 * YourModel::avg('column', array('conditions' => 'amount > 3.14159265'));
+	 * </code>
+	 *
+	 * @param string $column Name of the column
+	 * @see find
+	 * @return float Average value for the specified column
+	 */
+	public static function avg(/* ... */)
+	{
+		$args = func_get_args();
+		if (empty($args)) throw new Exception\ActiveRecordException('you must set the column name in the first argument');
+		$column = array_shift($args);
+		$options = static::extract_and_validate_options($args);
+		$options['select'] = 'AVG(' . $column . ')';
+		if (!empty($args) && count($ar!is_null($args[0]) && !empty($args[0]))
+		{
+			if (Utils::is_hash($args[0]))
+				$options['conditions'] = $args[0];
+			else
+				$options['conditions'] = call_user_func_array('static::pk_conditions',$args);
+		}
+
+		$table  = static::table();
+		$sql    = $table->options_to_sql($options);
+		$values = $sql->get_where_values();
+		return static::connection()->query_and_fetch_one($sql->to_s(), $values);
+	}
+
+	/**
+	 * Get a minimal amount for specified column.
+	 *
+	 * <code>
+	 * YourModel::min('column', array('conditions' => 'amount > 3.14159265'));
+	 * </code>
+	 *
+	 * @param string $column Name of the column
+	 * @see find
+	 * @return mixed Minimal value for the specified column
+	 */
+	public static function min(/* ... */)
+	{
+		$args = func_get_args();
+		if (empty($args)) throw new Exception\ActiveRecordException('you must set the column name in the first argument');
+		$column = array_shift($args);
+		$options = static::extract_and_validate_options($args);
+		$options['select'] = 'MIN(' . $column . ')';
+		if (!empty($args) && count($ar!is_null($args[0]) && !empty($args[0]))
+		{
+			if (Utils::is_hash($args[0]))
+				$options['conditions'] = $args[0];
+			else
+				$options['conditions'] = call_user_func_array('static::pk_conditions',$args);
+		}
+
+		$table  = static::table();
+		$sql    = $table->options_to_sql($options);
+		$values = $sql->get_where_values();
+		return $static::connection()->query_and_fetch_one($sql->to_s(), $values);
+	}
+
+	/**
+	 * Get a maximal amount for specified column.
+	 *
+	 * <code>
+	 * YourModel::max('column', array('conditions' => 'amount > 3.14159265'));
+	 * </code>
+	 *
+	 * @param string $column Name of the column
+	 * @see find
+	 * @return mixed Maximal value for the specified column
+	 */
+	public static function max(/* ... */)
+	{
+		$args = func_get_args();
+		if (empty($args)) throw new Exception\ActiveRecordException('you must set the column name in the first argument');
+		$column = array_shift($args);
+		$options = static::extract_and_validate_options($args);
+		$options['select'] = 'MAX(' . $column . ')';
+		if (!empty($args) && count($ar!is_null($args[0]) && !empty($args[0]))
+		{
+			if (Utils::is_hash($args[0]))
+				$options['conditions'] = $args[0];
+			else
+				$options['conditions'] = call_user_func_array('static::pk_conditions',$args);
+		}
+
+		$table  = static::table();
+		$sql    = $table->options_to_sql($options);
+		$values = $sql->get_where_values();
+		return static::connection()->query_and_fetch_one($sql->to_s(), $values);
+	}
+
+	/**
+	 * Get sum of values for specified column.
+	 *
+	 * <code>
+	 * YourModel::sum('column', array('conditions' => 'amount > 3.14159265'));
+	 * </code>
+	 *
+	 * @param string $column Name of the column
+	 * @see find
+	 * @return mixed Sum of values for the specified column
+	 */
+	public static function sum(/* ... */)
+	{
+		$args = func_get_args();
+		if (empty($args)) throw new Exception\ActiveRecordException('you must set the column name in the first argument');
+		$column = array_shift($args);
+		$options = static::extract_and_validate_options($args);
+		$options['select'] = 'SUM(' . $column . ')';
+		if (!empty($args) && count($ar!is_null($args[0]) && !empty($args[0]))
+		{
+			if (Utils::is_hash($args[0]))
+				$options['conditions'] = $args[0];
+			else
+				$options['conditions'] = call_user_func_array('static::pk_conditions',$args);
+		}
+
+		$table  = static::table();
+		$sql    = $table->options_to_sql($options);
+		$values = $sql->get_where_values();
+		return static::connection()->query_and_fetch_one($sql->to_s(), $values);
+	}
+
 
 	/**
 	 * Determine if a record exists.
