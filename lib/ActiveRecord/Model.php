@@ -645,8 +645,6 @@ class Model
 	 */
 	public function get_validation_rules()
 	{
-		require_once 'Validations.php';
-
 		$validator = new Validations($this);
 		return $validator->rules();
 	}
@@ -1423,7 +1421,6 @@ class Model
 	*/
 	public static function scoped()
 	{
-		require_once(__DIR__.'/Scope.php');
 		$instance = new static();
 		return new Scopes($instance);
 	}
@@ -1936,8 +1933,8 @@ class Model
 	 *
 	 * Ex:
 	 * <code>
-	 * ActiveRecord\CsvSerializer::$delimiter=';';
-	 * ActiveRecord\CsvSerializer::$enclosure='';
+	 * ActiveRecord\Serialization\CsvSerializer::$delimiter=';';
+	 * ActiveRecord\Serialization\CsvSerializer::$enclosure='';
 	 * YourModel::find('first')->to_csv(array('only'=>array('name','level')));
 	 * returns: Joe,2
 	 *
@@ -1985,8 +1982,7 @@ class Model
 	 */
 	private function serialize($type, $options)
 	{
-		require_once 'Serialization.php';
-		$class = "ActiveRecord\\{$type}Serializer";
+		$class = "Serialization\\{$type}Serializer";
 		$serializer = new $class($this, $options);
 		return $serializer->to_s();
 	}

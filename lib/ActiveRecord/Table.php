@@ -467,7 +467,6 @@ class Table
 
 	private function set_associations()
 	{
-		require_once 'Relationship.php';
 		$namespace = $this->class->getNamespaceName();
 
 		foreach ($this->class->getStaticProperties() as $name => $definitions)
@@ -483,19 +482,19 @@ class Table
 				switch ($name)
 				{
 					case 'has_many':
-						$relationship = new HasMany($definition);
+						$relationship = new Relationship\HasMany($definition);
 						break;
 
 					case 'has_one':
-						$relationship = new HasOne($definition);
+						$relationship = new Relationship\HasOne($definition);
 						break;
 
 					case 'belongs_to':
-						$relationship = new BelongsTo($definition);
+						$relationship = new Relationship\BelongsTo($definition);
 						break;
 
 					case 'has_and_belongs_to_many':
-						$relationship = new HasAndBelongsToMany($definition);
+						$relationship = new Relationship\HasAndBelongsToMany($definition);
 						break;
 				}
 
