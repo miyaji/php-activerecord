@@ -5,6 +5,7 @@
 namespace ActiveRecord\Relationship;
 
 use ActiveRecord\Model;
+use ActiveRecord\Inflector;
 
 /**
  * Belongs to relationship.

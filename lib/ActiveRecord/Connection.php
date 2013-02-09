@@ -6,8 +6,6 @@
 
 namespace ActiveRecord;
 
-require 'Column.php';
-
 use PDO;
 use PDOException;
 use Closure;
@@ -95,7 +93,7 @@ abstract class Connection
 			throw new Exception\DatabaseException("Empty connection string");
 
 		$info = static::parse_connection_url($connection_string);
-		$fqclass = static::load_adapter_class($info->protocol);
+		$fqclass = 'ActiveRecord\\Adapter\\'. ucwords($info->protocol) . 'Adapter';
 
 		try {
 			$connection = new $fqclass($info);
@@ -107,6 +105,8 @@ abstract class Connection
 				$connection->set_encoding($info->charset);
 		} catch (PDOException $e) {
 			throw new Exception\DatabaseException($e);
+		} catch (\Exception $e) {
+			throw new Exception\ActiveRecordException($e);
 		}
 		return $connection;
 	}

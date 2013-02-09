@@ -1372,7 +1372,7 @@ class Model
 				$ret = static::find('first',$options);
 				return $ret;
 			}
-			catch (\ActiveRecord\RecordNotFound $e) {
+			catch (Exception\RecordNotFound $e) {
 				if ($create)
 					return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
 				else throw $e;
@@ -1394,7 +1394,7 @@ class Model
 		{
 			return static::scoped()->$method();
 		}
-		throw new Exception\ActiveRecordException("Call to undefined method: $method");
+		throw new Exception\UndefinedMethodException("Call to undefined method: $method");
 	}
 	
 	/**
@@ -1525,7 +1525,7 @@ class Model
 			}
 		}
 
-		throw new Exception\ActiveRecordException("Call to undefined method: $method");
+		throw new Exception\UndefinedMethodException("Call to undefined method: $method");
 	}
 
 	/**
@@ -1676,7 +1676,7 @@ class Model
 		$class = get_called_class();
 		
 		if (func_num_args() <= 0)
-			throw new RecordNotFound("Couldn't find $class without an ID");
+			throw new Exception\RecordNotFound("Couldn't find $class without an ID");
 
 		$args = func_get_args();
 
@@ -1762,11 +1762,11 @@ class Model
 				if (!is_array($values))
 					$values = array($values);
 
-				throw new RecordNotFound("Couldn't find $class with ID=" . join(',',$values));
+				throw new Exception\RecordNotFound("Couldn't find $class with ID=" . join(',',$values));
 			}
 
 			$values = join(',',$values);
-			throw new RecordNotFound("Couldn't find all $class with IDs ($values) (found $results, but was looking for $expected)");
+			throw new Exception\RecordNotFound("Couldn't find all $class with IDs ($values) (found $results, but was looking for $expected)");
 		}
 		return $expected == 1 ? $list[0] : $list;
 	}

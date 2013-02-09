@@ -7,6 +7,7 @@ namespace ActiveRecord\Relationship;
 use ActiveRecord\Model;
 use ActiveRecord\Inflector;
 use ActiveRecord\Exception\HasManyThroughAssociationException;
+use ActiveRecord\Table;
 
 /**
  * One-to-many relationship.

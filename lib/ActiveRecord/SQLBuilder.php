@@ -158,8 +158,8 @@ class SQLBuilder
 	
 	public function insert_ignore($hash, $pk=null, $sequence_name=null)
 	{
-		if (!is_hash($hash))
-			throw new ActiveRecordException('Inserting requires a hash.');
+		if (!Utild::is_hash($hash))
+			throw new Exception\ActiveRecordException('Inserting requires a hash.');
 
 		$this->operation = 'INSERT_IGNORE';
 		$this->data = $hash;

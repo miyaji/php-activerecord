@@ -8,6 +8,9 @@ use ActiveRecord\Utils;
 use ActiveRecord\Inflector;
 use ActiveRecord\Reflections;
 use ActiveRecord\Model;
+use ActiveRecord\Exception\RelationshipException;
+use ActiveRecord\SQLBuilder;
+use ActiveRecord\Table;
 
 /**
  * Interface for a table relationship.

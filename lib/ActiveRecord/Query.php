@@ -51,13 +51,12 @@ class Query
     {
       $query = call_user_func_array(array($this->model_name, $method), $arguments);
       if (!$query instanceof Query)
-        throw new ActiveRecordException("Scopes must return a Query object");
+        throw new Exception\ActiveRecordException("Scopes must return a Query object");
 
       return $this->merge($query->get_options());
     }
     else
-      return $this->model_name->$method($args);
-      //throw new ActiveRecordException("The scope \"$method\" does not exists");
+      throw new Exception\UndefinedMethodException("The scope \"$method\" does not exists");
   }
 
   public function set_option($option, $value) 

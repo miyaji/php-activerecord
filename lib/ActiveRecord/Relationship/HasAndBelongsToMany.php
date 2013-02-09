@@ -4,6 +4,8 @@
  */
 namespace ActiveRecord\Relationship;
 
+use ActiveRecord\Model;
+
 /**
  * @todo implement me
  * @package ActiveRecord
