@@ -481,6 +481,7 @@ abstract class Connection
 	 */
 	public function datetime_to_string($datetime)
 	{
+		if ($this->protocol === 'mysql') return $datetime->format('Y-m-d H:i:s');
 		return $datetime->format('Y-m-d H:i:s T');
 	}
 
