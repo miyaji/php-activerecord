@@ -16,6 +16,7 @@ class SQLBuilder
 	private $table;
 	private $select = '*';
 	private $joins;
+	private $calc_found_rows = false;
 	private $order;
 	private $limit;
 	private $offset;
@@ -116,6 +117,13 @@ class SQLBuilder
 		$this->having = $having;
 		return $this;
 	}
+
+	public function calc_found_rows($flag = false)
+	{
+		$this->calc_found_rows = $flag;
+		return $this;
+	}
+
 
 	public function limit($limit)
 	{
@@ -404,7 +412,12 @@ class SQLBuilder
 
 	private function build_select()
 	{
-		$sql = "SELECT $this->select FROM $this->table";
+		$sql = "SELECT";
+
+		if ($this->calc_found_rows)
+			$sql .= " SQL_CALC_FOUND_ROWS";
+
+		$sql .= " $this->select FROM $this->table";
 
 		if ($this->joins)
 			$sql .= ' ' . $this->joins;

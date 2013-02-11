@@ -161,8 +161,9 @@ class Table
 				$options['select'] = $this->get_fully_qualified_table_name() . '.*';
 		}
 
-		if (array_key_exists('select',$options))
+		if (array_key_exists('select',$options)) {
 			$sql->select($options['select']);
+		}
 
 		if (array_key_exists('conditions',$options))
 		{
@@ -196,6 +197,9 @@ class Table
 
 		if (array_key_exists('having',$options))
 			$sql->having($options['having']);
+
+		if (array_key_exists('calc_found_rows',$options) && is_bool($options['calc_found_rows']))
+			$sql->calc_found_rows($options['calc_found_rows']);
 
 		return $sql;
 	}
