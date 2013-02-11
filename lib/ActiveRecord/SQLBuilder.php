@@ -16,7 +16,7 @@ class SQLBuilder
 	private $table;
 	private $select = '*';
 	private $joins;
-	private $calc_found_rows = false;
+	private $mysql_calc_found_rows = false;
 	private $order;
 	private $limit;
 	private $offset;
@@ -118,9 +118,9 @@ class SQLBuilder
 		return $this;
 	}
 
-	public function calc_found_rows($flag = false)
+	public function mysql_calc_found_rows($flag = false)
 	{
-		$this->calc_found_rows = $flag;
+		$this->mysql_calc_found_rows = $flag;
 		return $this;
 	}
 
@@ -414,7 +414,7 @@ class SQLBuilder
 	{
 		$sql = "SELECT";
 
-		if ($this->calc_found_rows)
+		if ($this->mysql_calc_found_rows)
 			$sql .= " SQL_CALC_FOUND_ROWS";
 
 		$sql .= " $this->select FROM $this->table";

@@ -1326,7 +1326,7 @@ class Model
 	 *
 	 * @var array
 	 */
-	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'calc_found_rows');
+	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'mysql_calc_found_rows');
 
 	/**
 	 * Enables the use of dynamic finders and scopes.

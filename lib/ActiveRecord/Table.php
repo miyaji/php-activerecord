@@ -198,8 +198,8 @@ class Table
 		if (array_key_exists('having',$options))
 			$sql->having($options['having']);
 
-		if (array_key_exists('calc_found_rows',$options) && is_bool($options['calc_found_rows']))
-			$sql->calc_found_rows($options['calc_found_rows']);
+		if (array_key_exists('mysql_calc_found_rows',$options) && is_bool($options['mysql_calc_found_rows']))
+			$sql->mysql_calc_found_rows($options['mysql_calc_found_rows']);
 
 		return $sql;
 	}
@@ -209,11 +209,12 @@ class Table
 		$sql = $this->options_to_sql($options);
 		$readonly = (array_key_exists('readonly',$options) && $options['readonly']) ? true : false;
 		$eager_load = array_key_exists('include',$options) ? $options['include'] : null;
+		$mysql_calc_found_rows = (array_key_exists('mysql_calc_found_rows',$options) && $options['mysql_calc_found_rows']) ? true : false;
 
-		return $this->find_by_sql($sql->to_s(),$sql->get_where_values(), $readonly, $eager_load);
+		return $this->find_by_sql($sql->to_s(),$sql->get_where_values(), $readonly, $eager_load, $mysql_calc_found_rows);
 	}
 
-	public function find_by_sql($sql, $values=null, $readonly=false, $includes=null)
+	public function find_by_sql($sql, $values=null, $readonly=false, $includes=null, $mysql_calc_found_rows=false)
 	{
 		$this->last_sql = $sql;
 
@@ -234,9 +235,16 @@ class Table
 			$list[] = $model;
 		}
 
+		if ($mysql_calc_found_rows) {
+			$all_size = $this->conn->query_and_fetch_one("SELECT FOUND_ROWS()");
+		}
+
 		if ($collect_attrs_for_includes && !empty($list))
 			$this->execute_eager_load($list, $attrs, $includes);
 
+		if ($mysql_calc_found_rows) {
+			return array('rows_count' => (int)$all_size, 'list' => $list);
+		}
 		return $list;
 	}
 
