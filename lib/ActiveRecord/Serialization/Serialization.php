@@ -2,7 +2,7 @@
 /**
  * @package ActiveRecord
  */
-namespace ActiveRecord;
+namespace ActiveRecord\Serialization;
 
 /**
  * Base class for Model serializers.
