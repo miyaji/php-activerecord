@@ -1326,7 +1326,7 @@ class Model
 	 *
 	 * @var array
 	 */
-	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'mysql_calc_found_rows', 'usecache');
+	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'mysql_calc_found_rows', 'usecache', 'notfound');
 
 	/**
 	 * Enables the use of dynamic finders and scopes.
@@ -1396,7 +1396,9 @@ class Model
 			catch (Exception\RecordNotFound $e) {
 				if ($create)
 					return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
-				else throw $e;
+				else if ((Config::instance()->get_throw_notfound() && !array_key_exists('notfound', $options)) || (array_key_exists('notfound',$options) && $options['notfound']))
+					throw $e;
+				else return false;
 			}
 
 		}
@@ -1889,7 +1891,9 @@ class Model
 		{
 			$last_query = static::table()->conn->last_query;
 
-			throw new Exception\RecordNotFound("Couldnt find any records for $class. Tried with query: $last_query");	
+			if ((Config::instance()->get_throw_notfound() && !array_key_exists('notfound', $options)) || (array_key_exists('notfound',$options) && $options['notfound']))
+				throw new Exception\RecordNotFound("Couldnt find any records for $class. Tried with query: $last_query");	
+			else return false;
 		}
 
 		return $single ? (!empty($list) ? $list[0] : null) : $list;
@@ -1929,11 +1933,16 @@ class Model
 				if (!is_array($values))
 					$values = array($values);
 
+			if ((Config::instance()->get_throw_notfound() && !array_key_exists('notfound', $options)) || (array_key_exists('notfound',$options) && $options['notfound']))
 				throw new Exception\RecordNotFound("Couldn't find $class with ID=" . join(',',$values));
+			else return false;
 			}
 
 			$values = join(',',$values);
-			throw new Exception\RecordNotFound("Couldn't find all $class with IDs ($values) (found $results, but was looking for $expected)");
+
+			if ((Config::instance()->get_throw_notfound() && !array_key_exists('notfound', $options)) || (array_key_exists('notfound',$options) && $options['notfound']))
+				throw new Exception\RecordNotFound("Couldn't find all $class with IDs ($values) (found $results, but was looking for $expected)");
+			else return false;
 		}
 		return $expected == 1 ? $list[0] : $list;
 	}

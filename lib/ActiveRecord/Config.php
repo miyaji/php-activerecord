@@ -89,6 +89,13 @@ class Config extends Singleton
 	private $date_format = \DateTime::ISO8601;
 
 	/**
+	 * switch for throw RecordNotFoundException
+	 *
+	 * @var bool
+	 */
+	private $throw_notfound = true;
+
+	/**
 	 * Allows config initialization using a closure.
 	 *
 	 * This method is just syntatic sugar.
@@ -340,5 +347,26 @@ class Config extends Singleton
 	{
 		Cache::initialize($url,$options);
 	}
-};
-?>
+
+	/**
+	 * Return whether or not throw RecordNotFoundException is on
+	 *
+	 * @return boolean
+	 */
+	public function get_throw_notfound()
+	{
+		return $this->throw_notfound;
+	}
+
+	/**
+	 * Turn on/off  throw RecordNotFoundException.
+	 *
+	 * @param boolan $flag the setting throw RecordNotFoundException.
+	 * @return void
+	 */
+	public function set_throw_notfound(boolean $flag)
+	{
+		if (!is_bool($flag)) throw new \InvalidArgumentException();
+		$this->throw_notfound = $flag;
+	}
+}
