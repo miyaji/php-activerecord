@@ -85,8 +85,12 @@ class Cache
 		if (!static::$adapter)
 			return $closure();
 
-		if (!($value = static::$adapter->read($key)))
-			static::$adapter->write($key,($value = $closure()),static::$options['expire']);
+		if (!($value = static::$adapter->read($key))) {
+			if (is_callable($closure)) 
+				$value = call_user_func($closure);
+			if ($value)
+				static::$adapter->write($key,$value,static::$options['expire']);
+		}
 
 		return $value;
 	}
@@ -96,4 +100,3 @@ class Cache
 		return (isset(static::$options['namespace']) && strlen(static::$options['namespace']) > 0) ? (static::$options['namespace'] . "::") : "";
 	}
 }
-?>

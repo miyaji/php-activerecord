@@ -79,28 +79,28 @@ class Model
 	 * @var Errors
 	 */
 	public $errors;
-	
+
 	/**
 	 * Contains model values as column_name => value
 	 *
 	 * @var array
 	 */
 	private $attributes = array();
-	
+
 	/**
-	* While enabled - The default scope will be used in all find methods for the Model
-	*
-	* @var boolean
-	*/
+	 * While enabled - The default scope will be used in all find methods for the Model
+	 *
+	 * @var boolean
+	 */
 	protected $default_scope_enabled = true;
-	
+
 	/**
-	* Flag that is set if conditions are added after scopes have been applied
-	* It is used to determine whether or not a find_by_pk should be called even
-	* if conditions have been set after a find by the default scope
-	*
-	* @var boolean
-	*/
+	 * Flag that is set if conditions are added after scopes have been applied
+	 * It is used to determine whether or not a find_by_pk should be called even
+	 * if conditions have been set after a find by the default scope
+	 *
+	 * @var boolean
+	 */
 	private $added_unscoped_conditions = false;
 	/**
 	 * Flag whether or not this model's attributes have been modified since it will either be null or an array of column_names that have been modified
@@ -1326,7 +1326,7 @@ class Model
 	 *
 	 * @var array
 	 */
-	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'mysql_calc_found_rows');
+	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'mysql_calc_found_rows', 'usecache');
 
 	/**
 	 * Enables the use of dynamic finders and scopes.
@@ -1417,97 +1417,97 @@ class Model
 		}
 		throw new Exception\UndefinedMethodException("Call to undefined method: $method");
 	}
-	
+
 	/**
-	*  Puts the model into "Scoped" mode.  It will allow the appending of options
-	*  arrays.
-	*
-	*  Usage 
-	*  <code>
-	*  Model::scoped()->where('name="tito"');
-	*  Model::scoped()->where('name="tito"')->limit(3)->all();
-	*  </code>
-	*  It allows parameterized named scopes to be declared. 
-	* 
-	*  For Example: 
-	*	<code>
-	*	public function last_few($number)
-	*	{
-	*	     return self::scoped()->limit($number)->order('created_at DESC');
-	*	}
-	*	//Used as Model::last_few(5)->all(); Will return the latest 5 created records
-	*	</code>
-	*
-	*  @return Scopes
-	*/
+	 *  Puts the model into "Scoped" mode.  It will allow the appending of options
+	 *  arrays.
+	 *
+	 *  Usage 
+	 *  <code>
+	 *  Model::scoped()->where('name="tito"');
+	 *  Model::scoped()->where('name="tito"')->limit(3)->all();
+	 *  </code>
+	 *  It allows parameterized named scopes to be declared. 
+	 * 
+	 *  For Example: 
+	 *	<code>
+	 *	public function last_few($number)
+	 *	{
+	 *	     return self::scoped()->limit($number)->order('created_at DESC');
+	 *	}
+	 *	//Used as Model::last_few(5)->all(); Will return the latest 5 created records
+	 *	</code>
+	 *
+	 *  @return Scopes
+	 */
 	public static function scoped()
 	{
 		$instance = new static();
 		return new Scopes($instance);
 	}
-	
+
 	/**
-	*  Called to disable a model from using the default scope on a find.
-	* Usage Model::scoped()->disable_default_scope();
-	*/
+	 *  Called to disable a model from using the default scope on a find.
+	 * Usage Model::scoped()->disable_default_scope();
+	 */
 	public function disable_default_scope()
 	{
 		$this->default_scope_enabled = false;
 	}
-	
+
 	/**
-	*  To be overridden by the model.  It should return an options array that is 
-	*  to be applied every time the model is called
-	*
-	*	<code>
-	*	public function default_scope()
-	*    {
-	*        return array(
-	*       			'conditions'=>'deleted == 0',
-	*       			'limit'=>3,
-	*        	);
-	*    }
-	*    //Model::all() will then never return a result that is flagged as deleted
-	*    //unless you call Model::scoped()->disable_default_scope()->all();
-	*    </code>
-	*
-	* @return array An array of finder options
-	*/
+	 *  To be overridden by the model.  It should return an options array that is 
+	 *  to be applied every time the model is called
+	 *
+	 *	<code>
+	 *	public function default_scope()
+	 *    {
+	 *        return array(
+	 *       			'conditions'=>'deleted == 0',
+	 *       			'limit'=>3,
+	 *        	);
+	 *    }
+	 *    //Model::all() will then never return a result that is flagged as deleted
+	 *    //unless you call Model::scoped()->disable_default_scope()->all();
+	 *    </code>
+	 *
+	 * @return array An array of finder options
+	 */
 	public function default_scope()
 	{
 		return array();
 	}
-	
+
 	/**
-	* To be overridden by the model. It should return an array of options that are named
-	* by their key.
-	*
-	*	<code>
-	*	public function named_scopes()
-	*    {
-	*        return array(
-	*            'is_tito'=>array(
-	*                'conditions'=>'name="tito"',
-	*            ),
-	*            'last_two'=>array(
-	*                'order'=>'created_at DESC',
-	*                'limit'=>2,
-	*            ),
-	*        );
-	*    }
-	*  	Model::is_tito()->find('all');
-	*   </code>
-	*
-	* @return array An array containing named arrays of finder options
-	*/
+	 * To be overridden by the model. It should return an array of options that are named
+	 * by their key.
+	 *
+	 *	<code>
+	 *	public function named_scopes()
+	 *    {
+	 *        return array(
+	 *            'is_tito'=>array(
+	 *                'conditions'=>'name="tito"',
+	 *            ),
+	 *            'last_two'=>array(
+	 *                'order'=>'created_at DESC',
+	 *                'limit'=>2,
+	 *            ),
+	 *        );
+	 *    }
+	 *  	Model::is_tito()->find('all');
+	 *   </code>
+	 *
+	 * @return array An array containing named arrays of finder options
+	 */
 	public function named_scopes()
 	{
 		return array();
 	}
-	
+
 	/**
-	*  @return array|null An array of the options within the named scope
-	*/
+	 *  @return array|null An array of the options within the named scope
+	 */
 	public function check_for_named_scope($scope)
 	{
 		$scopes = $this->named_scopes();
@@ -1824,7 +1824,7 @@ class Model
 	public static function find(/* $type, $options */)
 	{
 		$class = get_called_class();
-		
+
 		if (func_num_args() <= 0)
 			throw new Exception\RecordNotFound("Couldn't find $class without an ID");
 
@@ -1875,8 +1875,15 @@ class Model
 
 		$options['mapped_names'] = static::$alias_attribute;
 
-
-		$list = static::table()->find($options);
+		if (array_key_exists('usecache', $options) && $options['usecache']) { 
+			$cache_key = static::get_cache_key($options);
+			$self = get_called_class();
+			$list = Cache::get($cache_key, function() use($self) {
+				return $self::table()->find($options);
+			});
+		} else {
+			$list = static::table()->find($options);
+		}
 
 		if (empty($list) AND !$is_relationship)
 		{
@@ -1900,7 +1907,17 @@ class Model
 	public static function find_by_pk($values, $options)
 	{
 		$options['conditions'] = static::pk_conditions($values);
-		$list = static::table()->find($options);
+
+		if (array_key_exists('usecache', $options) && $options['usecache']) { 
+			$cache_key = static::get_cache_key($options);
+			$self = get_called_class();
+			$list = Cache::get($cache_key, function() use($self) {
+				return $self::table()->find($options);
+			});
+		} else {
+			$list = static::table()->find($options);
+		}
+
 		$results = count($list);
 
 		if ($results != ($expected = count($values)))
@@ -2022,15 +2039,15 @@ class Model
 		$options = self::append_default_scope_to_options($options);
 		return $options;
 	}
-	
+
 	/**
-	* 
-	* Applies the Model's default scope if it has not been disabled through
-	* a call to Model::disable_default_scope()
-	*
-	* @param array &$array An array
-	* @return array A valid options array
-	*/
+	 * 
+	 * Applies the Model's default scope if it has not been disabled through
+	 * a call to Model::disable_default_scope()
+	 *
+	 * @param array &$array An array
+	 * @return array A valid options array
+	 */
 	protected static function append_default_scope_to_options($options)
 	{
 		if(isset($options['scope']))
@@ -2202,6 +2219,22 @@ class Model
 			throw $e;
 		}
 		return true;
+	}
+
+	/**
+	 * Make a cache-key of find options.
+	 *
+	 * @param array $options Find Options
+	 * @return string cache key
+	 */
+	private static function get_cache_key($options) {
+		if (isset($options['conditions'])) {
+			$conditions = $options['conditions'];
+			unset($options['conditions']);
+			$options =  array_merge($conditions, $options);
+		}
+		if (is_string($options['usecache'])) return $options['usecache'];
+		return hash('ripemd160', sprintf('phpactiverecord.%s',serialize(krsort($options))));
 	}
 
 }
