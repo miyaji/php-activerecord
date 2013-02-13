@@ -1,5 +1,5 @@
 <?php
-namespace ActiveRecord;
+namespace ActiveRecord\Cache;
 
 class Memcache
 {
@@ -62,4 +62,3 @@ class Memcache
 		return $this->memcache->set($key,$value,null,$expire);
 	}
 }
-?>

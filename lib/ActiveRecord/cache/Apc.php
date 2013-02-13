@@ -1,6 +1,5 @@
 <?php
-
-namespace ActiveRecord;
+namespace ActiveRecord\Cache;
 
 class Apc
 {
