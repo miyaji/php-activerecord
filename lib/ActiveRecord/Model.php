@@ -1440,12 +1440,12 @@ class Model
 	 *	//Used as Model::last_few(5)->all(); Will return the latest 5 created records
 	 *	</code>
 	 *
-	 *  @return Scopes
+	 *  @return Scope
 	 */
 	public static function scoped()
 	{
 		$instance = new static();
-		return new Scopes($instance);
+		return new Scope($instance);
 	}
 
 	/**
