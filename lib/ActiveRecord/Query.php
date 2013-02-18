@@ -74,7 +74,7 @@ class Query
   {
     $args = func_get_args();
 
-    if (is_hash($args[0])) 
+    if (Utils::is_hash($args[0])) 
     {
       foreach($args[0] as $key => $value)    
         $this->append_where("$key=?",$value);
