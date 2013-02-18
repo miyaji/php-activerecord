@@ -11,7 +11,7 @@ namespace ActiveRecord;
  * 
  * @package ActiveRecord
  */
-class Scopes
+class Scope
 {
 	protected $model = null;
 	protected $scopes = null;
