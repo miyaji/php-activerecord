@@ -1884,7 +1884,6 @@ class Model
 			$cache_key = static::get_cache_key($options);
 			$self = get_called_class();
 			$list = Cache::get($cache_key, function() use($self, $options) {
-				var_dump("キャッシュがない");
 				return $self::table()->find($options);
 			});
 		} else {
