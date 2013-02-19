@@ -2243,7 +2243,7 @@ class Model
 			$options =  array_merge($conditions, $options);
 		}
 		if (is_string($options['usecache'])) return $options['usecache'];
-		return hash('ripemd160', sprintf('phpactiverecord.%s',serialize(krsort($options))));
+		return hash('ripemd160', sprintf('phpactiverecord.%s.%s',static::table_name(),serialize(krsort($options))));
 	}
 
 }
