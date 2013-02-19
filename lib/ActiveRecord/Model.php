@@ -1548,6 +1548,9 @@ class Model
 			}
 		}
 
+		if (is_callable($this, $method)) {
+			call_user_func_array([$this,$method], $args);
+		}
 		throw new Exception\UndefinedMethodException("Call to undefined method: $method");
 	}
 
@@ -1880,7 +1883,8 @@ class Model
 		if (array_key_exists('usecache', $options) && $options['usecache']) { 
 			$cache_key = static::get_cache_key($options);
 			$self = get_called_class();
-			$list = Cache::get($cache_key, function() use($self) {
+			$list = Cache::get($cache_key, function() use($self, $options) {
+				var_dump("キャッシュがない");
 				return $self::table()->find($options);
 			});
 		} else {
@@ -1915,7 +1919,7 @@ class Model
 		if (array_key_exists('usecache', $options) && $options['usecache']) { 
 			$cache_key = static::get_cache_key($options);
 			$self = get_called_class();
-			$list = Cache::get($cache_key, function() use($self) {
+			$list = Cache::get($cache_key, function() use($self, $options) {
 				return $self::table()->find($options);
 			});
 		} else {
@@ -2243,7 +2247,9 @@ class Model
 			$options =  array_merge($conditions, $options);
 		}
 		if (is_string($options['usecache'])) return $options['usecache'];
-		return hash('ripemd160', sprintf('phpactiverecord.%s',serialize(krsort($options))));
+		krsort($options);
+		//return sprintf('pacache-%s-%s',static::table_name(),hash('ripemd160', sprintf('pa.%s',serialize($options))));
+		return sprintf('pacache-%s-%s',static::table_name(),hash('sha256', sprintf('pa.%s',serialize($options))));
 	}
 
 }
