@@ -1548,6 +1548,9 @@ class Model
 			}
 		}
 
+		if (is_callable($this, $method)) {
+			call_user_func_array([$this,$method], $args);
+		}
 		throw new Exception\UndefinedMethodException("Call to undefined method: $method");
 	}
 
