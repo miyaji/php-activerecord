@@ -2248,7 +2248,6 @@ class Model
 		}
 		if (is_string($options['usecache'])) return $options['usecache'];
 		krsort($options);
-		//return sprintf('pacache-%s-%s',static::table_name(),hash('ripemd160', sprintf('pa.%s',serialize($options))));
 		return sprintf('pacache-%s-%s',static::table_name(),hash('sha256', sprintf('pa.%s',serialize($options))));
 	}
 
