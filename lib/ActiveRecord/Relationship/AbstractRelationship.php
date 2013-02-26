@@ -187,7 +187,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 
 		$class = $this->class_name;
 
-		$related_models = $class::find('all', $options);
+		$related_models = $class::find('all', $options, 'is_relationship');
 		$used_models = array();
 		$model_values_key = $inflector->variablize($model_values_key);
 		$query_key = $inflector->variablize($query_key);
