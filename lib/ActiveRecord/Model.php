@@ -806,6 +806,12 @@ class Model
 		return $model;
 	}
 
+  public static function initialize($attributes) {
+    $class_name = get_called_class();
+    $model = new $class_name($attributes);
+    return $model;
+  }
+
 	/**
 	 * Save the model to the database.
 	 *
@@ -1371,6 +1377,7 @@ class Model
 	{
 		$options = static::extract_and_validate_options($args);
 		$create = false;
+    $initialize = false;
 
 		if (substr($method,0,17) == 'find_or_create_by')
 		{
@@ -1384,6 +1391,17 @@ class Model
 			$method = 'find_by' . substr($method,17);
 		}
 
+    if (substr($method,0,21) == 'find_or_initialize_by') {
+      $attr = substr(0,21);
+
+      if (strpos($attributes,'_or_') !== false) {
+        throw new Exception\ActiveRecordException("Cannot use OR'd attributes in find_or_initialize_by");
+      }
+
+      $initialize = true;
+      $method = 'find_by' . substr($method, 21);
+    }
+
 		if (substr($method,0,7) === 'find_by')
 		{
 			$attributes = substr($method,8);
@@ -1396,6 +1414,8 @@ class Model
 			catch (Exception\RecordNotFound $e) {
 				if ($create)
 					return static::create(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
+        else if ($initialize)
+          return static::initialize(SQLBuilder::create_hash_from_underscored_string($attributes,$args,static::$alias_attribute));
 				else if ((Config::instance()->get_throw_notfound() && !array_key_exists('notfound', $options)) || (array_key_exists('notfound',$options) && $options['notfound']))
 					throw $e;
 				else return false;
