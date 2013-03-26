@@ -33,6 +33,8 @@ class Errors implements \IteratorAggregate
 		'greater_than_or_equal_to' => "must be greater than or equal to %d"
 	);
 
+  public $human_attributes = array();
+
 	/**
 	 * Constructs an {@link Errors} object.
 	 *
@@ -210,7 +212,14 @@ class Errors implements \IteratorAggregate
 					if (is_null($msg))
 						continue;
 
-					$errors[$attribute][] = ($message = Utils::human_attribute($attribute) . ' ' . $msg);
+          $human_attribute = Utils::human_attribute($attribute);
+          if (!empty($this->human_attributes)) {
+            if ($this->human_attributes[$attribute]) {
+              $human_attribute = $this->human_attributes[$attribute];
+            }
+          }
+
+					$errors[$attribute][] = ($message = $human_attribute . ' ' . $msg);
 
 					if ($closure)
 						$closure($attribute,$message);
@@ -284,6 +293,6 @@ class Errors implements \IteratorAggregate
 	 */
 	public function getIterator()
 	{
-		return new ArrayIterator($this->full_messages());
+		return new \ArrayIterator($this->full_messages());
 	}
 }

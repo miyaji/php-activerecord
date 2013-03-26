@@ -617,6 +617,10 @@ class Model
 		return $this->attributes;
 	}
 
+  public function human_attributes() {
+    return array();
+  }
+
 	/**
 	 * Retrieve the primary key name.
 	 *
@@ -1114,6 +1118,7 @@ class Model
 
 		// need to store reference b4 validating so that custom validators have access to add errors
 		$this->errors = $validator->get_record();
+    $this->errors->human_attributes = $this->human_attributes();
 		$validator->validate();
 
 		foreach (array('after_validation', "after_$validation_on") as $callback)
