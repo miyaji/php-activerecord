@@ -364,7 +364,7 @@ class Config extends Singleton
 	 * @param boolan $flag the setting throw RecordNotFoundException.
 	 * @return void
 	 */
-	public function set_throw_notfound(boolean $flag)
+	public function set_throw_notfound($flag)
 	{
 		if (!is_bool($flag)) throw new \InvalidArgumentException();
 		$this->throw_notfound = $flag;
