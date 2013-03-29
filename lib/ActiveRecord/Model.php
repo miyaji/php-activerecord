@@ -1337,7 +1337,7 @@ class Model
 	 *
 	 * @var array
 	 */
-	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'mysql_calc_found_rows', 'usecache', 'notfound');
+	static $VALID_OPTIONS = array('conditions', 'limit', 'offset', 'order', 'select', 'joins', 'include', 'readonly', 'group', 'from', 'having', 'scope', 'mysql_calc_found_rows', 'usecache', 'notfound', '_model');
 
 	/**
 	 * Enables the use of dynamic finders and scopes.
@@ -1794,7 +1794,9 @@ class Model
 	 */
 	public static function sql() 
 	{
-		return new Query(get_called_class());
+		// return new Query(get_called_class());
+		$instance = new static();
+		return new Query($instance);
 	}
 
 	/**
@@ -2091,8 +2093,11 @@ class Model
 		{
 			$instance = $options['scope']->get_model();
 		}
-		else
+		elseif (isset($options['_model'])) {
+			$instance = $options['_model'];
+		} else {
 			$instance = new static();
+		}
 		if($instance->default_scope_enabled && $default = $instance->default_scope())
 		{
 			$scope = $instance::scoped();

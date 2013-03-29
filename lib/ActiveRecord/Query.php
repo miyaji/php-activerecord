@@ -35,6 +35,15 @@ class Query
     $this->model_name = $model_name;
   }
 
+	/**
+	*  Prevents the default scope from being added when the model performs a find
+	*/
+	public function disable_default_scope()
+	{
+		$this->model_name->disable_default_scope();
+		return $this;
+	}
+
   public static function get_builder_scopes()
   {
     return self::$builder_scopes;
@@ -67,6 +76,7 @@ class Query
 
   public function get_options() 
   {
+		$this->options['_model'] = $this->model_name;
     return $this->options;
   }
 
