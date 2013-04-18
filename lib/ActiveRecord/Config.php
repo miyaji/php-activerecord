@@ -95,6 +95,8 @@ class Config extends Singleton
 	 */
 	private $throw_notfound = true;
 
+  private $time_zone = null;
+
 	/**
 	 * Allows config initialization using a closure.
 	 *
@@ -369,4 +371,12 @@ class Config extends Singleton
 		if (!is_bool($flag)) throw new \InvalidArgumentException();
 		$this->throw_notfound = $flag;
 	}
+
+  public function get_time_zone() {
+    return $this->time_zone;
+  }
+
+  public function set_time_zone($time_zone) {
+    $this->time_zone = $time_zone;
+  }
 }

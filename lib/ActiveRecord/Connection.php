@@ -237,6 +237,12 @@ abstract class Connection
 				$host = "unix_socket=$info->host";
 
 			$this->connection = new PDO("$info->protocol:$host;dbname=$info->db", $info->user, $info->pass, static::$PDO_OPTIONS);
+
+      $config = Config::instance();
+      $time_zone = $config->get_time_zone();
+      if (!is_null($time_zone)) {
+        $this->connection->exec("SET time_zone='{$time_zone}'");
+      }
 		} catch (PDOException $e) {
 			throw new Exception\DatabaseException($e);
 		}
