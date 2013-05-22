@@ -530,7 +530,7 @@ class Model
 			return $this->attributes[$name];
 
 		// check relationships if no attribute
-		if (array_key_exists($name,$this->__relationships))
+		if (array_key_exists($name,$this->__relationships) && !is_null($this->__relationships[$name]))
 			return $this->__relationships[$name];
 
 		$table = static::table();
