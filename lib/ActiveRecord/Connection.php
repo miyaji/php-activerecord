@@ -46,6 +46,16 @@ abstract class Connection
 	 */
 	public $protocol;
 	/**
+	 * Database's date format
+	 * @var string
+	 */
+	static $date_format = 'Y-m-d';
+	/**
+	 * Database's datetime format
+	 * @var string
+	 */
+	static $datetime_format = 'Y-m-d H:i:s T';
+	/**
 	 * Default PDO options to set for each connection.
 	 * @var array
 	 */
@@ -297,59 +307,59 @@ abstract class Connection
 	 */
 	public function query($sql, &$values=array())
 	{
-        if ($this->logging)
-            $now = microtime(true);
+		if ($this->logging)
+			$now = microtime(true);
 
-        $this->last_query = $sql;
+		$this->last_query = $sql;
 
-        try
-        {
-            if (!($sth = $this->connection->prepare($sql)))
-            {
-                $exception = $this;
-            }
-            else
-            {
-                $sth->setFetchMode(PDO::FETCH_ASSOC);
+		try
+		{
+			if (!($sth = $this->connection->prepare($sql)))
+			{
+				$exception = $this;
+			}
+			else
+			{
+				$sth->setFetchMode(PDO::FETCH_ASSOC);
 
-                if (!$sth->execute($values))
-                    $exception = $this;
-            }
-        }
-        catch (PDOException $e)
-        {
-            $exception = isset($sth) ? $sth : $this;
-        }
+				if (!$sth->execute($values))
+					$exception = $this;
+			}
+		}
+		catch (PDOException $e)
+		{
+			$exception = isset($sth) ? $sth : $this;
+		}
 
-        if (isset($exception))
-            throw new Exception\DatabaseException($exception);
+		if (isset($exception))
+			throw new Exception\DatabaseException($exception);
 
-        if ($this->logging)
-        {
-            $time = microtime(true) - $now;
-            $sql = preg_replace('/\s+/', ' ', $sql);
-            $data = '';
+		if ($this->logging)
+		{
+			$time = microtime(true) - $now;
+			$sql = preg_replace('/\s+/', ' ', $sql);
+			$data = '';
 
-            if ($values) {
-                $values = array_map(function ($v)
-                {
-                    if (is_null($v))
-                        return 'NULL';
-                    if (is_string($v))
-                        return "'" . addslashes($v) . "'";
-                    return $v;
-                }, $values);
-                $data = ' (' . implode(',', $values) . ')';
-            }
+			if ($values) {
+				$values = array_map(function ($v)
+			{
+				if (is_null($v))
+					return 'NULL';
+				if (is_string($v))
+					return "'" . addslashes($v) . "'";
+				return $v;
+			}, $values);
+				$data = ' (' . implode(',', $values) . ')';
+			}
 
-            $this->logger->log(array(
-                'time' => round($time, 5),
-                'query' => $sql,
-                'data' => $data
-            ));
-        }
+			$this->logger->log(array(
+				'time' => round($time, 5),
+				'query' => $sql,
+				'data' => $data
+			));
+		}
 
-        return $sth;
+		return $sth;
 	}
 
 	/**
@@ -476,7 +486,7 @@ abstract class Connection
 	 */
 	public function date_to_string($datetime)
 	{
-		return $datetime->format('Y-m-d');
+		return $datetime->format(static::$date_format);
 	}
 
 	/**
@@ -488,7 +498,7 @@ abstract class Connection
 	public function datetime_to_string($datetime)
 	{
 		if ($this->protocol === 'mysql') return $datetime->format('Y-m-d H:i:s');
-		return $datetime->format('Y-m-d H:i:s T');
+		return $datetime->format(static::$datetime_format);
 	}
 
 	/**
@@ -505,7 +515,7 @@ abstract class Connection
 		if ($errors['warning_count'] > 0 || $errors['error_count'] > 0)
 			return null;
 
-		return new DateTime($date->format('Y-m-d H:i:s T'));
+		return new DateTime($date->format(static::$datetime_format));
 	}
 
 	/**
