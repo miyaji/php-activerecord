@@ -20,8 +20,8 @@ use ActiveRecord\Table;
 interface InterfaceRelationship
 {
 	public function __construct($options=array());
-	public function build_association(Model $model, $attributes=array());
-	public function create_association(Model $model, $attributes=array());
+	public function build_association(Model $model, $attributes=array(), $guard_attributes=true);
+	public function create_association(Model $model, $attributes=array(), $guard_attributes=true);
 }
 
 /**
@@ -225,10 +225,10 @@ abstract class AbstractRelationship implements InterfaceRelationship
 	 * @param array $attributes Hash containing attributes to initialize the model with
 	 * @return Model
 	 */
-	public function build_association(Model $model, $attributes=array())
+	public function build_association(Model $model, $attributes=array(), $guard_attributes=true)
 	{
 		$class_name = $this->class_name;
-		return new $class_name($attributes);
+		return new $class_name($attributes, $guard_attributes);
 	}
 
 	/**
@@ -238,10 +238,10 @@ abstract class AbstractRelationship implements InterfaceRelationship
 	 * @param array $attributes Hash containing attributes to initialize the model with
 	 * @return Model
 	 */
-	public function create_association(Model $model, $attributes=array())
+	public function create_association(Model $model, $attributes=array(), $guard_attributes=true)
 	{
 		$class_name = $this->class_name;
-		$new_record = $class_name::create($attributes);
+		$new_record = $class_name::create($attributes, true, $guard_attributes);
 		return $this->append_record_to_associate($model, $new_record);
 	}
 
@@ -294,16 +294,11 @@ abstract class AbstractRelationship implements InterfaceRelationship
 
 	protected function set_class_name($class_name)
 	{
-		try {
-			$reflection = Reflections::instance()->add($class_name)->get($class_name);
-		} catch (\ReflectionException $e) {
-			if (isset($this->options['namespace'])) {
-				$class_name = $this->options['namespace'].'\\'.$class_name;
-				$reflection = Reflections::instance()->add($class_name)->get($class_name);
-			} else {
-				throw $e;
-			}
+		if (!has_absolute_namespace($class_name) && isset($this->options['namespace'])) {
+			$class_name = $this->options['namespace'].'\\'.$class_name;
 		}
+		
+		$reflection = Reflections::instance()->add($class_name)->get($class_name);
 
 		if (!$reflection->isSubClassOf('ActiveRecord\\Model'))
 			throw new RelationshipException("'$class_name' must extend from ActiveRecord\\Model");

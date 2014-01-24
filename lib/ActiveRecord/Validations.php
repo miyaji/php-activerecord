@@ -622,4 +622,3 @@ class Validations
 		return (Utils::is_blank($var) && (isset($options['allow_blank']) && $options['allow_blank']));
 	}
 }
-?>

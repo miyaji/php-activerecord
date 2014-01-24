@@ -308,6 +308,13 @@ class Utils
 		return false;
 	}
 
+	public static function has_absolute_namespace($class_name)
+	{
+		if (substr($class_name, 0, 1) == '\\')
+			return true;
+		return false;
+	}
+
 	/**
 	 * Returns true if all values in $haystack === $needle
 	 * @param $needle
@@ -357,5 +364,3 @@ class Utils
 	}
 
 }
-
-
