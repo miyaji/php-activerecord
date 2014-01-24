@@ -151,30 +151,79 @@ class HasMany extends AbstractRelationship
 
 		$options = $this->unset_non_finder_options($this->options);
 		$options['conditions'] = $conditions;
-		return $class_name::find($this->poly_relationship ? 'all' : 'first',$options, 'is_relationship');
+		return $class_name::find($this->poly_relationship ? 'all' : 'first', $options, 'is_relationship');
 	}
 
-	private function inject_foreign_key_for_new_association(Model $model, &$attributes)
+	/**
+	 * Get an array containing the key and value of the foreign key for the association
+	 *
+	 * @param Model $model
+	 * @access private
+	 * @return array
+	 */
+	private function get_foreign_key_for_new_association(Model $model)
 	{
 		$this->set_keys($model);
 		$primary_key = Inflector::instance()->variablize($this->foreign_key[0]);
 
-		if (!isset($attributes[$primary_key]))
-			$attributes[$primary_key] = $model->id;
+		return array(
+			$primary_key => $model->id,
+		);
+	}
+
+	private function inject_foreign_key_for_new_association(Model $model, &$attributes)
+	{
+		$primary_key = $this->get_foreign_key_for_new_association($model);
+
+		if (!isset($attributes[key($primary_key)]))
+			$attributes[key($primary_key)] = current($primary_key);
 
 		return $attributes;
 	}
 
-	public function build_association(Model $model, $attributes=array())
+	public function build_association(Model $model, $attributes=array(), $guard_attributes=true)
 	{
-		$attributes = $this->inject_foreign_key_for_new_association($model, $attributes);
-		return parent::build_association($model, $attributes);
+		$relationship_attributes = $this->get_foreign_key_for_new_association($model);
+
+		if ($guard_attributes) {
+			// First build the record with just our relationship attributes (unguarded)
+			$record = parent::build_association($model, $relationship_attributes, false);
+
+			// Then, set our normal attributes (using guarding)
+			$record->set_attributes($attributes);
+		} else {
+			// Merge our attributes
+			$attributes = array_merge($relationship_attributes, $attributes);
+
+			// First build the record with just our relationship attributes (unguarded)
+			$record = parent::build_association($model, $attributes, $guard_attributes);
+		}
+
+		return $record;
 	}
 
-	public function create_association(Model $model, $attributes=array())
+	public function create_association(Model $model, $attributes=array(), $guard_attributes=true)
 	{
-		$attributes = $this->inject_foreign_key_for_new_association($model, $attributes);
-		return parent::create_association($model, $attributes);
+		$relationship_attributes = $this->get_foreign_key_for_new_association($model);
+
+		if ($guard_attributes) {
+			// First build the record with just our relationship attributes (unguarded)
+			$record = parent::build_association($model, $relationship_attributes, false);
+
+			// Then, set our normal attributes (using guarding)
+			$record->set_attributes($attributes);
+
+			// Save our model, as a "create" instantly saves after building
+			$record->save();
+		} else {
+			// Merge our attributes
+			$attributes = array_merge($relationship_attributes, $attributes);
+
+			// First build the record with just our relationship attributes (unguarded)
+			$record = parent::create_association($model, $attributes, $guard_attributes);
+		}
+
+		return $record;
 	}
 
 	public function load_eagerly($models=array(), $attributes=array(), $includes, Table $table)
@@ -183,3 +232,4 @@ class HasMany extends AbstractRelationship
 		$this->query_and_attach_related_models_eagerly($table,$models,$attributes,$includes,$this->foreign_key, $table->pk);
 	}
 }
+

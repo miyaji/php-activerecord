@@ -5,3 +5,5 @@
 test/*.db
 *.swp
 .DS_Store
+vendor/*
+composer.lock
